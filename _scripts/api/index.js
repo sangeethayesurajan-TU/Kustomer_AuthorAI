@@ -11,6 +11,7 @@ class Api {
 
     async postAppToOrg(appDefinition) {
         const bearer = `Bearer ${this.apiToken}`;
+        console.log("bearer => ", bearer)
         const url = `${this.baseUrl}/v1/apps/available`;
         const init = {
             method: 'POST',
@@ -22,18 +23,19 @@ class Api {
         };
 
         try {
-            const response = await fetch(url, init);
+            const response = await fetch(url, init);            
             if (!response.ok) {
                 const errors = await response.body.errors;
                 console.error(JSON.stringify(errors, null, 2));
             }
 
             const data = await response.json();
+            console.log("data ", data)
             console.log(JSON.stringify(data, null, 2));
             return data;
 
         } catch (e) {
-            console.error('Error(s): ', JSON.stringify(e, null, 2));
+            console.error('Error(s): ', e, JSON.stringify(e, null, 2));
             process.exit(1);
         }
     }
