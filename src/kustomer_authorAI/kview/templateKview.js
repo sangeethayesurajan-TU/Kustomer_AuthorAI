@@ -1,11 +1,30 @@
 // import emoji from "../../../assets/kusty.png";
-const img_value = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+const rotate_icon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.42871 5.13485V10.2777M3.42871 10.2777H8.57157M3.42871 10.2777L7.40585 6.54057C8.58949 5.35893 10.1251 4.59397 11.7813 4.36095C13.4375 4.12794 15.1245 4.43948 16.5883 5.24865C18.052 6.05782 19.2131 7.32078 19.8967 8.84722C20.5802 10.3737 20.7492 12.0809 20.378 13.7117C20.0069 15.3425 19.1159 16.8086 17.8391 17.8889C16.5623 18.9693 14.9691 19.6054 13.2993 19.7015C11.6296 19.7976 9.97383 19.3485 8.58156 18.4217C7.18928 17.495 6.13591 16.1409 5.58014 14.5634" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+const copy_icon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.00014 14.5714H5.143C4.68834 14.5714 4.2523 14.3908 3.93081 14.0693C3.60932 13.7478 3.42871 13.3118 3.42871 12.8571V5.14284C3.42871 4.68819 3.60932 4.25215 3.93081 3.93066C4.2523 3.60917 4.68834 3.42856 5.143 3.42856H12.8573C13.3119 3.42856 13.748 3.60917 14.0695 3.93066C14.391 4.25215 14.5716 4.68819 14.5716 5.14284V5.99999M11.143 9.42856H18.8573C19.8041 9.42856 20.5716 10.1961 20.5716 11.1428V18.8571C20.5716 19.8039 19.8041 20.5714 18.8573 20.5714H11.143C10.1962 20.5714 9.42871 19.8039 9.42871 18.8571V11.1428C9.42871 10.1961 10.1962 9.42856 11.143 9.42856Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+const thumbs_up_icon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.71442 20.5714H5.143C4.68834 20.5714 4.2523 20.3908 3.93081 20.0693C3.60932 19.7478 3.42871 19.3118 3.42871 18.8571V12.8571C3.42871 12.4025 3.60932 11.9664 3.93081 11.6449C4.2523 11.3235 4.68834 11.1428 5.143 11.1428H7.71442M13.7144 9.42856V5.99999C13.7144 5.318 13.4435 4.66395 12.9613 4.18171C12.479 3.69948 11.825 3.42856 11.143 3.42856L7.71442 11.1428V20.5714H17.383C17.7964 20.5761 18.1976 20.4312 18.5126 20.1634C18.8277 19.8957 19.0353 19.523 19.0973 19.1143L20.2801 11.4C20.3174 11.1543 20.3009 10.9034 20.2316 10.6648C20.1623 10.4261 20.0419 10.2054 19.8789 10.0179C19.7158 9.83033 19.5139 9.6805 19.2872 9.57874C19.0605 9.47699 18.8143 9.42574 18.5659 9.42856H13.7144Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+const thumbs_down_icon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.71442 3.42858H5.143C4.68834 3.42858 4.2523 3.6092 3.93081 3.93069C3.60932 4.25218 3.42871 4.68821 3.42871 5.14287V11.1429C3.42871 11.5975 3.60932 12.0336 3.93081 12.3551C4.2523 12.6765 4.68834 12.8572 5.143 12.8572H7.71442M13.7144 14.5714V18C13.7144 18.682 13.4435 19.3361 12.9613 19.8183C12.479 20.3005 11.825 20.5714 11.143 20.5714L7.71442 12.8572V3.42858H17.383C17.7964 3.42391 18.1976 3.56881 18.5126 3.83658C18.8277 4.10435 19.0353 4.47695 19.0973 4.88573L20.2801 12.6C20.3174 12.8457 20.3009 13.0966 20.2316 13.3352C20.1623 13.5739 20.0419 13.7946 19.8789 13.9821C19.7158 14.1697 19.5139 14.3195 19.2872 14.4213C19.0605 14.523 18.8143 14.5743 18.5659 14.5714H13.7144Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+const magic_icon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3.75 2.25V5.25M2.25 3.75H5.25M4.5 12.75V15.75M3 14.25H6M9.75 2.25L11.4643 7.39286L15.75 9L11.4643 10.6071L9.75 15.75L8.03571 10.6071L3.75 9L8.03571 7.39286L9.75 2.25Z" stroke="#8217FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `;
 
-const img_value2 = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.7144 7.42855H9.143C8.68834 7.42855 8.2523 7.60917 7.93081 7.93066C7.60932 8.25215 7.42871 8.68818 7.42871 9.14284V15.1428C7.42871 15.5975 7.60932 16.0335 7.93081 16.355C8.2523 16.6765 8.68834 16.8571 9.143 16.8571H11.7144M17.7144 18.5714V22C17.7144 22.682 17.4435 23.336 16.9613 23.8183C16.479 24.3005 15.825 24.5714 15.143 24.5714L11.7144 16.8571V7.42855H21.383C21.7964 7.42388 22.1976 7.56878 22.5126 7.83655C22.8277 8.10432 23.0353 8.47692 23.0973 8.8857L24.2801 16.6C24.3174 16.8457 24.3009 17.0965 24.2316 17.3352C24.1623 17.5738 24.0419 17.7946 23.8789 17.9821C23.7158 18.1696 23.5139 18.3195 23.2872 18.4212C23.0605 18.523 22.8143 18.5742 22.5659 18.5714H17.7144Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+const pre_magic_icon = `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="33" height="33" rx="3.5" fill="#F3E8FF"/>
+<rect x="0.5" y="0.5" width="33" height="33" rx="3.5" stroke="#C694FF"/>
+<path d="M11.75 10.25V13.25M10.25 11.75H13.25M12.5 20.75V23.75M11 22.25H14M17.75 10.25L19.4643 15.3929L23.75 17L19.4643 18.6071L17.75 23.75L16.0357 18.6071L11.75 17L16.0357 15.3929L17.75 10.25Z" stroke="#8217FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `;
 
@@ -156,6 +175,43 @@ let styledData = `
     .query {
         text-align: justify;
     }
+
+    .overall_icon_pack {
+        font-size: 14px;
+        font-family: poppins;
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 10px;
+    } 
+
+    .action_items {
+        color: #8217FF;
+        background: #F3E8FF;
+        width: 60%;
+        padding: 6px;
+        border-radius: 4px;
+    }
+
+    .ac_content {
+        text-align: justify;
+        padding: 0 5px;
+        white-space: pre-wrap; 
+    }
+
+    .iconItems {
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
+        align-items: center;
+        padding: 0px 5px;
+    }
+
+    .postShortcutLoadingv {
+        background: #F6F6F6;
+        padding: 5px;
+    }
 `
 let styleSection = `\`${styledData}\``; 
 
@@ -172,9 +228,6 @@ export default {
                 try {
                     const model_type = user_setting_response.settings.Zendesk_PromptoGPT_modeltype;
                     const usecase = user_setting_response.settings.Zendesk_PromptoGPT_usecase;
-
-                    const promptoGPT_toggle = user_setting_response.settings.Zendesk_PromptoGPT_toggle;
-                    const knowledgeAssist_toggle = user_setting_response.settings.Zendesk_KnowledgeAssist_toggle;
 
                     const apitoken = user_setting_response?.settings.x_apitoken;
                     const apikey = user_setting_response?.settings.x_apikey;
@@ -234,90 +287,11 @@ export default {
                     );
                     const checkdata = checkAPI?.data?.attributes?.responseBody;
                     console.log("checkdata ", checkdata);
-                    return { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle };                    
+                    return { authToken, clientAuthToken, model_type, usecase };                    
                 } catch (err) {
                     console.log("Error in generateTokenApi::", err);
                 }
-            }  
-
-            const AuthoAI_menu = [
-                {
-                    id: "1",
-                    display_name: "Summarize",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: "Paragraph"
-                        }, 
-                        {
-                            id: "2",
-                            name: "Bullets"
-                        }
-                    ]
-                }, 
-                {
-                    id: "2",
-                    display_name: "Find Action Item",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: "Bullets"
-                        },
-                        {
-                            id: "2",
-                            name: "Table"
-                        }
-                    ]
-                },
-                {
-                    id: "3",
-                    display_name: "Sentiment Analysis",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: ""
-                        }
-                    ]
-                }, 
-                {
-                    id: "4",
-                    display_name: "Improve Writing",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: ""
-                        }
-                    ]
-                },
-                {
-                    id: "5",
-                    display_name: "Fix Spellings and Grammar",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: ""
-                        }
-                    ]
-                },
-                {
-                    id: "6",
-                    display_name: "Change Tone",
-                    sub_cat: [
-                        {
-                            id: "1",
-                            name: "Professional"
-                        },
-                        {
-                            id: "1",
-                            name: "Casual"
-                        },
-                        {
-                            id: "1",
-                            name: "Friendly"
-                        }
-                    ]
-                }
-            ]            
+            }                   
 
             const AuthorAIComponent = window.__authorAIComponent12345 || (window.__authorAIComponent12345 = 
                 function AuthorAIComponent(props) {
@@ -333,13 +307,44 @@ export default {
                     const [isAppId, setAppId] = useState({});
                     const [isLoading, setLoading] = useState(false);
                     const [generateToken, setGenerateToken] = useState({});
-                    const [isSettingStatus, setSettingStatus] = useState(sessionStorage.getItem('settingStatus') === 'true');
-                    const [isLoggedStatus, setLoggedStatus] = useState(sessionStorage.getItem('isLoggedIn') === 'true');
+                    const [isSettingStatus, setSettingStatus] = useState(sessionStorage.getItem('authorAIsettingStatus') === 'true');
+                    const [isLoggedStatus, setLoggedStatus] = useState(sessionStorage.getItem('authorAILoggedIn') === 'true');
                     const [isAutoLoading, setAutoLoading] = useState(false);
                     const[settingreg, setSettingreg] = useState({});
+                    const [isSelecting, setSelecting] = useState(false);
+                    const [postShortcutLoading, setPostShortcutLoading] = useState(false);
+                    const [textArea, setTextArea] = useState('');
+                    const [postpreConfig, setPostpreConfig] = useState({});
+
+                    const findUseCaseOption = (useCaseOption) => {
+                        try {
+
+                        } catch (err) {
+                            console.log("Error in findUseCaseOption::", err)
+                        }
+                    }
+
+                    const highlightHeadings = (text) => {
+                        // Ensure the input is a string
+                        if (typeof text !== 'string') {
+                            console.error('Expected a string but got:', typeof text);
+                            return null; // Or return an empty fragment
+                        }
+
+                        return text.split(" ").map((e, index) => {
+                            if (e.match(/[a-zA-Z]+:/)) {
+                                // Return a bolded span element for headings
+                                return <span key={index} style={{ fontWeight: "bold" }}>{e} </span>;
+                            } else {
+                                // Return the regular word in a span
+                                return <span key={index}>{e} </span>;
+                            }
+                        });
+                    };
 
                     //api's
-                    async function autoSuggestApi(user_email, latestmsgfromuser, model_type, use_case, auth_token, isAuthuu, user_setting_infos) {
+                    // async function autoSuggestApi(user_email, latestmsgfromuser, model_type, use_case, auth_token, isAuthuu, user_setting_infos) {
+                    async function autoSuggestApi(payload, isAuthuu) {    
                         setAutoLoading(true);
                         // let unique_uuid = generateUUID();
                         // const payload = createPayload(
@@ -350,53 +355,52 @@ export default {
                         try {
                             let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.auto_suggest_api/run';
                             let response = await KustomerRequest({
-                            url: endpoint,
-                            method: "POST",
-                            body: {
-                                "headers": {
-                                "Content-Type": "application/json",
-                                "X-Authtoken": auth_token
+                                url: endpoint,
+                                method: "POST",
+                                body: {
+                                    "headers": payload?.headers,
+                                    "body": payload.body
+                                }
                                 },
-                                "body": {
-                                "user_id": "sangeetha.yesurajan^@taskus.com",
-                                "question": "Where is the food?",
-                                "model_type": "generative",
-                                "usecase": "food_ordering_and_food_delivery",
-                                "enable_automasking": true
+                                (err, response) => {
+                                    if (err) {
+                                    console.log("Into 1")
+                                    return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                    console.log("Into 2")
+                                    return response.responseBody.errors.message;
+                                    }
                                 }
-                            }
-                            },
-                            (err, response) => {
-                                if (err) {
-                                console.log("Into 1")
-                                return 'Failed to process return'
-                                } else if (response.responseBody.errors) {
-                                console.log("Into 2")
-                                return response.responseBody.errors.message;
-                                }
-                            }
                             );
                             if (response?.data?.attributes?.responseBody) {
-                            // let unique_uuid = generateUUID();
-                            // const payload = createPayload(
-                            //     'Kustomer_PromptoGPT_Request_Query_Completed',
-                            //     'Success'
-                            // );
-                            // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
-                            // const payload_query = createPayload(
-                            //     'Kustomer_PromptoGPT_Request_Query',
-                            //     'Success'
-                            // );
-                            // let unique_uuid_query = generateUUID();
-                            // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
-                            setAutoLoading(false);
-                            return response?.data?.attributes?.responseBody;
+                                // let unique_uuid = generateUUID();
+                                // const payload = createPayload(
+                                //     'Kustomer_PromptoGPT_Request_Query_Completed',
+                                //     'Success'
+                                // );
+                                // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
+                                // const payload_query = createPayload(
+                                //     'Kustomer_PromptoGPT_Request_Query',
+                                //     'Success'
+                                // );
+                                // let unique_uuid_query = generateUUID();
+                                // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
+                                console.log(" payload payload ", response?.data?.attributes?.responseBody)
+                                setAutoLoading(false);
+                                let formattedResponseData = highlightHeadings(response?.data?.attributes?.responseBody?.answer);
+                                console.log("formattedResponse formattedResponse ", formattedResponseData)
+                                let useCaseOption = findUseCaseOption(response?.data?.attributes?.responseBody);
+                                setPostpreConfig({
+                                    ...postpreConfig,
+                                    // postpreResponse: responseData
+                                    postpreResponse: formattedResponseData
+                                })
+                                return response?.data?.attributes?.responseBody;
                             }
-
                         } catch (error) {
                             console.log("Error in autoSuggestApi::", error)
                         }
-                        }
+                    }
 
                     useEffect(() => {
                         KustomerRequest({ url: '/v1/users/current' }).then(result => {
@@ -425,22 +429,103 @@ export default {
                     }, [appSettings?.default]);
 
                     useEffect(() => {
+                        let pendingClick = 0;
+
                         const handleSelection = () => {
                             const selection = window.getSelection();
-                            const selectedText = selection.toString();
-                            setSelectedText(selectedText);
+                            const selectedText = selection.toString().trim();
+
+                            if (selectedText.length > 0) {
+                                setSelectedText(selectedText);
+                                setSelecting(true);
+                                setPostShortcutLoading(false);
+                                console.log('Text selected:', selectedText);
+                            } else {
+                                // setSelecting(false);
+                            }
                         };
 
-                        // Listen for selection changes
-                        document.addEventListener('mouseup', handleSelection);
-                        document.addEventListener('selectionchange', handleSelection);
+                        const xorClick = (e) => {
+                            // Clear any pending single-clicks if a new click is detected
+                            if (pendingClick) {
+                                clearTimeout(pendingClick);
+                                pendingClick = 0;
+                            }
+
+                            switch (e.detail) {
+                                case 1:
+                                    // Schedule single-click action if no double-click follows
+                                    pendingClick = setTimeout(() => {
+                                        // const selection = window.getSelection();
+                                        // const selectedText = selection.toString().trim();
+
+                                        // if (selectedText.length > 0) {
+                                        //     setSelectedText(selectedText);
+                                        //     setSelecting(true);
+                                        //     console.log('Single click - text selected:', selectedText);
+                                        // } else {
+                                        //     setSelecting(false);
+                                        // }
+                                        console.log("Into this one Single")
+                                        // setSelecting(true)
+                                    }, 500); // Delay to wait for double-click
+                                    break;
+
+                                case 2:
+                                    // Immediately handle double-click action
+                                    clearTimeout(pendingClick);
+                                    const selection = window.getSelection();
+                                    const selectedText = selection.toString().trim();
+
+                                    if (selectedText.length > 0) {
+                                        setSelectedText(selectedText);
+                                        setSelecting(true);
+                                        setPostShortcutLoading(false);
+                                        console.log('Double click - text selected:', selectedText);
+                                    } 
+                                    else {
+                                        console.log("Into this one Double")
+                                        // setSelecting();
+                                    }
+                                    break;
+
+                                default:
+                                    console.log('Higher multi-click actions can be added as needed');
+                                    break;
+                            }
+                        };
+
+                        const handleMouseUp = () => {
+                            const selection = window.getSelection();
+                            const selectedText = selection.toString().trim();
+
+                            if (selectedText.length > 0) {
+                                setSelectedText(selectedText);
+                                setSelecting(true);
+                                setPostShortcutLoading(false);
+                                console.log('Mouse selection - text selected:', selectedText);
+                            } else {
+                                // setSelecting(false);
+                            }
+                        };
+
+                        // Add event listener for click and mouseup events
+                        document.addEventListener('click', xorClick, false);
+                        document.addEventListener('mouseup', handleMouseUp, false);
 
                         // Cleanup event listeners on component unmount
                         return () => {
-                            document.removeEventListener('mouseup', handleSelection);
-                            document.removeEventListener('selectionchange', handleSelection);
+                            clearTimeout(pendingClick);
+                            document.removeEventListener('click', xorClick);
+                            document.removeEventListener('mouseup', handleMouseUp);
                         };
                     }, []);
+
+                    useEffect(() => {
+                        if ((selectedText == "") && (textArea == "")) {
+                            setSelecting(false);
+                        }
+                    }, [selectedText, textArea]);
 
                     useEffect(() => {
                         if (isAppId?.appId && appSettings?.default) {
@@ -449,6 +534,9 @@ export default {
                         }
                         
                     }, [isAppId]);
+
+                    useEffect(() => {
+                    }, [isSelecting, selectedText, postpreConfig])
 
                     async function loginBtnAPI() {
                         // setLoading(true);
@@ -475,7 +563,7 @@ export default {
                             );
                             let loginResponse = resdata?.data?.attributes?.responseBody;
                             if (loginResponse?.status === true) {
-                                sessionStorage.setItem('isLoggedIn', true);
+                                sessionStorage.setItem('authorAILoggedIn', true);
                                 setLoggedStatus(true);
                                 // setApiCall(false)
                                 // settingResponse();
@@ -518,11 +606,11 @@ export default {
                             );
                             let settingRes = data?.data?.attributes?.responseBody
                             if (settingRes?.message === "Authentication failed ") {
-                                sessionStorage.setItem('settingStatus', false);
+                                sessionStorage.setItem('authorAIsettingStatus', false);
                                 setSettingStatus(false);
                                 setLoading(false);
                             } else {
-                                sessionStorage.setItem('settingStatus', true);
+                                sessionStorage.setItem('authorAIsettingStatus', true);
                                 setSettingStatus(true);
                                 setSettingreg(settingRes);
                                 setLoading(false);
@@ -531,17 +619,15 @@ export default {
                                 // 'Kustomer_LoggedIn',
                                 // 'Success'
                                 // );
-                                // await logsAPI({ isAuthuu: isAuthuu, user_setting: settingRes, PAYLOAD_FOR_EVENT: payload, log_message: logMsg });                                
-                                const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle } = await generateTokenApi(settingRes, isEmail, isAppId);
+                                // await logsAPI({ isAuthuu: isAppId, user_setting: settingRes, PAYLOAD_FOR_EVENT: payload, log_message: logMsg });                                
+                                const { authToken, clientAuthToken, model_type, usecase } = await generateTokenApi(settingRes, isEmail, isAppId);
                                 setGenerateToken(
-                                {
-                                    authToken: authToken,
-                                    client_authtoken: clientAuthToken,
-                                    promptoGPT_toggle: promptoGPT_toggle,
-                                    knowledgeAssist_toggle: knowledgeAssist_toggle,
-                                    model_type: model_type,
-                                    usecase: usecase
-                                }
+                                    {
+                                        authToken: authToken,
+                                        client_authtoken: clientAuthToken,
+                                        model_type: model_type,
+                                        usecase: usecase
+                                    }
                                 )
                             }
                         } catch (err) {
@@ -562,8 +648,7 @@ export default {
                                         "x-apikey": "wdayP9T8g7K5rro3u3ZcgCgbBnsRHRUvNCUmxatY7hwpQ6kKu5nb4gUd255VUdwH"                                    
                                     }                         
                                 }
-                            },(err, response) => {
-                                    
+                            },(err, response) => {                                    
                                 if (err) {
                                     return 'Failed to process return'
                                 } 
@@ -571,6 +656,10 @@ export default {
                             );
                             let configRes = response?.data?.attributes?.responseBody;
                             console.log("configRes", configRes);
+                            setPostpreConfig({
+                                postShortcuts: configRes?.data?.postShortcuts,
+                                preShortcuts: configRes?.data?.preShortcuts
+                            });
                         } catch (err) {
                             console.log("Error in globalConfigApi::", err);
                         }                
@@ -606,24 +695,93 @@ export default {
                         return (
                             <>
                                 <div className={'write_paste_selected_txt'}>
-                                    Write/Paste/Select Text to Start
+                                    Write/Select Text to Start
                                 </div>
                             </>
                         )
                     }
 
+                    const post_sub_category_items = (e, item, sub_category, index) => {
+                        try {
+                            e.stopPropagation();
+                            console.log("stopPropagation ", sub_category);
+                            setPostShortcutLoading(true);
+                            let payload = {
+                                body: {
+                                    "application_name": "TaskScribe",
+                                    "model_type": generateToken?.model_type,
+                                    "usecase": sub_category?.useCase?.aiName,
+                                    "question": textArea,
+                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    //"enable_automasking": true
+                                },
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-Authtoken": generateToken?.authToken
+                                }
+
+                            }
+                            if (sub_category?.useCaseOption) {
+                                payload.body['usecase_options'] = sub_category?.useCaseOption?.aiName
+                            }
+                            console.log("PAYLOAD PAYLOAD ::", payload);
+                            autoSuggestApi(payload, isAppId)
+                        } catch (err) {
+                            console.log("Error in post_sub_category_items::", err);
+                        }
+                }
+
+                    const ps_main_category = (item) => {
+                        try {
+                            setPostShortcutLoading(true);
+
+                            let payload = {
+                                body: {
+                                    "application_name": "TaskScribe",
+                                    "model_type": generateToken?.model_type,
+                                    "usecase": item?.useCase?.aiName,
+                                    "question": "How to claim my refund cash?",
+                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    // "enable_automasking": true
+                                },
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-Authtoken": generateToken?.authToken
+                                }
+
+                            }
+                            if (item?.usecase_options) {
+                                payload.body['usecase_options'] = item?.usecase_options?.aiName
+                            }
+                            console.log("PAYLOAD PAYLOAD ::", payload);
+                            autoSuggestApi(payload, isAppId)
+                        } catch (err) {
+                            console.log("Error in ps_main_category::", err);
+                        }
+                    }
+
                     const post_shortcut_content = () => {
                         return (
                             <div className="post_shortcut_list">
-                                {(AuthoAI_menu || []).map((item) => {
+                                {(postpreConfig?.postShortcuts || []).map((item) => {
                                     return (
                                         <div className={'ps_single_item'}>
-                                            <div className={'ps_main_list_names'}>{item.display_name}</div>
+                                            <div 
+                                                className={'ps_main_list_names'}
+                                                // onMouseDown={() => setPostShortcutLoading(true)}
+                                                onClick={() => (item?.subUseCases.length == 0) ? ps_main_category(item) : ""}
+                                            >
+                                                {item.displayName}
+                                            </div>
                                             <div className={'post_shortcut_subcategory'}>
-                                                {(item.sub_cat || []).map((sub) => {
+                                                {(item.subUseCases || []).map((sub, index) => {
                                                     return (
-                                                        <div className={sub?.name?'ps_subcategory_item':''}>
-                                                            {sub?.name}
+                                                        <div 
+                                                            className={sub?.name?'ps_subcategory_item':''}
+                                                            // onMouseDown={(e) => post_sub_category_items(e, sub)}
+                                                            onClick={(e) => post_sub_category_items(e, item, sub, index)}
+                                                        >
+                                                            {sub?.displayName}
                                                         </div>
                                                     )
                                                 })}
@@ -635,6 +793,17 @@ export default {
                         )
                     }
 
+                    const handleReplyTextArea = (e) => {
+                        try {
+                            setTextArea(e.target.value);
+                            setPostShortcutLoading(false);
+                            setSelecting(true);
+                            setSelectedText('')
+                        } catch (err) {
+                            console.log("Err in handleReplyTextArea:: ", err)
+                        }
+                    }
+
                     const pre_post_textarea = () => {
                         return (
                             <div className={"pre_ta_parent"}>
@@ -643,14 +812,32 @@ export default {
                                         // value={replyTxt}
                                         // readOnly={!(userLang?.trim())}
                                         className={'textarea_input'}
-                                        placeholder={'Write/Paste/Select any text...'}
-                                        // onChange={handleReplyTextArea}
+                                        placeholder={'Write/Select any text...'}
+                                        onChange={handleReplyTextArea}
                                     />
                                     <div className={'magic_icon'}>
-                                        ${img_value}
+                                        ${pre_magic_icon}
                                     </div>
                                 </div>
                             </div>                        
+                        )
+                    }
+
+                    const iconItems = () => {
+                        return (
+                            <div className="iconItems">
+                                <div>${rotate_icon}</div>
+                                <div>${copy_icon}</div>
+                                <div>${thumbs_up_icon}</div>
+                                <div>${thumbs_down_icon}</div>
+                                <div>${magic_icon}</div>
+                            </div>
+                        )
+                    }
+
+                    const post_pre_select_box = () => {
+                        return (
+                            <div className={'postShortcutLoadingv'}>{!(postShortcutLoading)&&post_shortcut_content()}</div>
                         )
                     }
 
@@ -659,19 +846,35 @@ export default {
                             <div className={'selected_txt_post_blog'}>
                                 <div className={'st_response'}>
                                     <div className={'select_text_heading'}>Selected Text</div>
-                                    <div className={'query'}>Hey , I have another query, how can I claim fors refund?</div>
-                                </div>
-                                <div>{post_shortcut_content()}</div>
+                                    <div className={'query'}>{selectedText}</div>
+                                </div>                            
                             </div>
                         )
                     }
 
+                    const response_content = () => {
+                        return (
+                            <div className={'overall_icon_pack'}>
+                                <div className="action_items">Find Action Items/Bullets</div>
+
+                                {/* Render formatted content without dangerouslySetInnerHTML */}
+                                <div className="ac_content">
+                                    {(postpreConfig?.postpreResponse || "")}
+                                </div>
+
+                                {iconItems()}
+                            </div>
+                        );
+                    };
+
                     return (
                         <div> 
                             <div>                                                     
-                                {initialPage()}   
-                                {selected_txt_post_blog()}   
-                                {pre_post_textarea()}   
+                                {!(isSelecting) && initialPage()}   
+                                {(selectedText != "") && selected_txt_post_blog()} 
+                                {((textArea != "") || (selectedText != "")) &&post_pre_select_box()}
+                                {(postShortcutLoading) && response_content()}   
+                                {pre_post_textarea()}
                             </div> 
                             <style>{${styleSection}}</style>
                         </div>
