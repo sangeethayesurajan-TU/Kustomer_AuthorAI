@@ -221,7 +221,7 @@ export default {
     template: `
         if (appSettings && appSettings?.default) {
 
-            const { useState, useEffect } = React;
+            const { useState, useEffect, useRef } = React;
             
             //generate Auth Token API
             async function generateTokenApi(user_setting_response, emailId, isAuthuu) {
@@ -315,6 +315,9 @@ export default {
                     const [postShortcutLoading, setPostShortcutLoading] = useState(false);
                     const [textArea, setTextArea] = useState('');
                     const [postpreConfig, setPostpreConfig] = useState({});
+                    const [selections, setSelections] = useState([]);
+                    const scrollRef = useRef(null);  // Ref to handle automatic scroll
+                    const [copied, setCopied] = useState(null);
 
                     const findUseCaseOption = (useCaseOption) => {
                         try {
@@ -394,7 +397,13 @@ export default {
                                     ...postpreConfig,
                                     // postpreResponse: responseData
                                     postpreResponse: formattedResponseData
-                                })
+                                });
+                                let originalData = response?.data?.attributes?.responseBody?.answer;
+                                let showText = selectedText?selectedText:textArea;
+                                setSelections((prevSelections) => [
+                                    ...prevSelections,
+                                    { showText, formattedResponseData, originalData }
+                                ]);
                                 return response?.data?.attributes?.responseBody;
                             }
                         } catch (error) {
@@ -427,6 +436,14 @@ export default {
                         });
                         setAppId(updatedAuth);
                     }, [appSettings?.default]);
+
+                    useEffect(() => {}, [selections]);
+
+                    useEffect(() => {
+                        if (scrollRef.current) {
+                            scrollRef.current.scrollIntoView({ behavior: "smooth" });
+                        }
+                    }, [selections]);
 
                     useEffect(() => {
                         let pendingClick = 0;
@@ -476,6 +493,7 @@ export default {
                                     clearTimeout(pendingClick);
                                     const selection = window.getSelection();
                                     const selectedText = selection.toString().trim();
+                                    setTextArea('');
 
                                     if (selectedText.length > 0) {
                                         setSelectedText(selectedText);
@@ -711,7 +729,7 @@ export default {
                                     "application_name": "TaskScribe",
                                     "model_type": generateToken?.model_type,
                                     "usecase": sub_category?.useCase?.aiName,
-                                    "question": textArea,
+                                    "question": textArea? textArea: selectedText,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
                                     //"enable_automasking": true
                                 },
@@ -729,7 +747,7 @@ export default {
                         } catch (err) {
                             console.log("Error in post_sub_category_items::", err);
                         }
-                }
+                    }
 
                     const ps_main_category = (item) => {
                         try {
@@ -740,7 +758,7 @@ export default {
                                     "application_name": "TaskScribe",
                                     "model_type": generateToken?.model_type,
                                     "usecase": item?.useCase?.aiName,
-                                    "question": "How to claim my refund cash?",
+                                    "question": textArea? textArea: selectedText,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
                                     // "enable_automasking": true
                                 },
@@ -823,11 +841,32 @@ export default {
                         )
                     }
 
-                    const iconItems = () => {
+                    async function copyFunc(text, index) {
+                        console.log("copyFunc ", text)
+                        try {
+                            navigator.clipboard.writeText(text)
+                                .then(() => {
+                                    setCopied(index);
+                                    setTimeout(() => {
+                                        setCopied(null)
+                                    }, 1000); //Hide the "Copied" message after 2secs
+                                })
+                                .catch((err) => {
+                                    console.log("Failed to copy::", err)
+                                });
+                        } catch (err) {
+                            console.log("Error in copy::", err)
+                        }
+                    }
+
+                    const iconItems = (selectionData, index) => {
                         return (
                             <div className="iconItems">
-                                <div>${rotate_icon}</div>
-                                <div>${copy_icon}</div>
+                                <div >${rotate_icon}</div>
+                                <div onClick={() => copyFunc(selectionData, index)}>
+                                    {(copied === index) && <span className={'copied-message'}>Copied</span>}
+                                    ${copy_icon}
+                                </div>
                                 <div>${thumbs_up_icon}</div>
                                 <div>${thumbs_down_icon}</div>
                                 <div>${magic_icon}</div>
@@ -841,37 +880,67 @@ export default {
                         )
                     }
 
-                    const selected_txt_post_blog = () => {
+                    const selected_txt_post_blog = (selection, index) => {
                         return (
-                            <div className={'selected_txt_post_blog'}>
-                                <div className={'st_response'}>
-                                    <div className={'select_text_heading'}>Selected Text</div>
-                                    <div className={'query'}>{selectedText}</div>
-                                </div>                            
-                            </div>
+                            <>
+                                <div className={'selected_txt_post_blog'}>
+                                    <div className={'st_response'}>
+                                        <div className={'select_text_heading'}>Selected Text</div>
+                                        {/* <div className={'query'}>{selectedText}</div> */}
+                                        <div className={'query'}>{selection?.showText}</div> 
+                                    </div>                            
+                                </div>
+                                <div className={'overall_icon_pack'}>
+                                    <div className="action_items">Find Action Items/Bullets</div>
+
+                                    {/* Render formatted content without dangerouslySetInnerHTML */}
+                                    {/*<div className="ac_content">
+                                        {(postpreConfig?.postpreResponse || "")} formattedResponseData
+                                    </div>*/}
+                                    <div className="ac_content">
+                                        {(selection?.formattedResponseData || "")} 
+                                    </div>
+
+                                    {iconItems(selection?.originalData, index)}
+                                </div>
+                            </>                            
                         )
                     }
 
                     const response_content = () => {
                         return (
-                            <div className={'overall_icon_pack'}>
-                                <div className="action_items">Find Action Items/Bullets</div>
+                            <>
+                                {/*<div className={'overall_icon_pack'}>
+                                    <div className="action_items">Find Action Items/Bullets</div>
 
-                                {/* Render formatted content without dangerouslySetInnerHTML */}
-                                <div className="ac_content">
-                                    {(postpreConfig?.postpreResponse || "")}
-                                </div>
+                                    // Render formatted content without dangerouslySetInnerHTML 
+                                    <div className="ac_content">
+                                        {(postpreConfig?.postpreResponse || "")}
+                                    </div>
 
-                                {iconItems()}
-                            </div>
+                                    {iconItems()}
+                                </div>*/}
+                            </>
+                            
                         );
                     };
 
                     return (
                         <div> 
-                            <div>                                                     
-                                {!(isSelecting) && initialPage()}   
-                                {(selectedText != "") && selected_txt_post_blog()} 
+                            <div>  
+                                <div>
+                                    {!(isSelecting) && initialPage()}   
+                                    {/*{(selectedText != "") && selected_txt_post_blog()}*/}
+                                    {/* Render list of selected texts and responses */}
+                                    {selections.length > 0 && selections.map((selection, index) => (
+                                        <div key={index}>
+                                            {selected_txt_post_blog(selection, index)}
+                                            {/* Place scrollRef after the last response */}
+                                            {index === selections.length - 1 && <div ref={scrollRef}></div>}
+                                        </div>
+                                    ))}
+                                </div>                                                   
+                                
                                 {((textArea != "") || (selectedText != "")) &&post_pre_select_box()}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
