@@ -167,9 +167,10 @@ let styledData = `
     .select_text_heading {
         color: #8217FF;
         background: #F3E8FF;
-        width: 35%;
+        width: 40%;
         padding: 4px;
         border-radius: 4px;
+        text-align: center;
     }
 
     .query {
@@ -189,9 +190,10 @@ let styledData = `
     .action_items {
         color: #8217FF;
         background: #F3E8FF;
-        width: 60%;
+        width: 66%;
         padding: 6px;
         border-radius: 4px;
+        text-align: center;
     }
 
     .ac_content {
@@ -211,6 +213,19 @@ let styledData = `
     .postShortcutLoadingv {
         background: #F6F6F6;
         padding: 5px;
+    }
+
+    .loader {
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 3px dashed rgb(255, 255, 255);
+        border-right: 3px dashed rgb(255, 255, 255);
+        border-bottom: 3px dashed rgb(255, 255, 255);
+        border-left: 3px dashed rgb(255, 255, 255);
+        width: 20px;
+        height: 20px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
     }
 `
 let styleSection = `\`${styledData}\``; 
@@ -318,6 +333,11 @@ export default {
                     const [selections, setSelections] = useState([]);
                     const scrollRef = useRef(null);  // Ref to handle automatic scroll
                     const [copied, setCopied] = useState(null);
+                    const [postOrPreOnloading, setPostOrPreOnloading] = useState({
+                        postOnloading: false,
+                        preOnloading: false,
+                        textData: ""
+                    });
 
                     const findUseCaseOption = (useCaseOption) => {
                         try {
@@ -398,11 +418,18 @@ export default {
                                     // postpreResponse: responseData
                                     postpreResponse: formattedResponseData
                                 });
+                                setPostOrPreOnloading({ ...postOrPreOnloading, textData: payload.body?.question })
                                 let originalData = response?.data?.attributes?.responseBody?.answer;
-                                let showText = selectedText?selectedText:textArea;
+                                let showText = payload.body?.question;
+                                let res_useCase_option = {
+                                    usecase: payload?.body?.usecase,
+                                    useCaseOption: payload?.body?.usecase_options
+                                }
+                                let category = payload?.category;
+                                console.log("res_useCase_option ::", res_useCase_option, category);
                                 setSelections((prevSelections) => [
                                     ...prevSelections,
-                                    { showText, formattedResponseData, originalData }
+                                    { showText, formattedResponseData, originalData, res_useCase_option, category }
                                 ]);
                                 return response?.data?.attributes?.responseBody;
                             }
@@ -494,6 +521,11 @@ export default {
                                     const selection = window.getSelection();
                                     const selectedText = selection.toString().trim();
                                     setTextArea('');
+                                    setPostOrPreOnloading({
+                                        postOnloading: false,
+                                        preOnloading: false,
+                                        textData: ""
+                                    });
 
                                     if (selectedText.length > 0) {
                                         setSelectedText(selectedText);
@@ -542,6 +574,7 @@ export default {
                     useEffect(() => {
                         if ((selectedText == "") && (textArea == "")) {
                             setSelecting(false);
+                            setPostShortcutLoading(false);
                         }
                     }, [selectedText, textArea]);
 
@@ -554,7 +587,7 @@ export default {
                     }, [isAppId]);
 
                     useEffect(() => {
-                    }, [isSelecting, selectedText, postpreConfig])
+                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading])
 
                     async function loginBtnAPI() {
                         // setLoading(true);
@@ -724,20 +757,29 @@ export default {
                             e.stopPropagation();
                             console.log("stopPropagation ", sub_category);
                             setPostShortcutLoading(true);
+                            let textData;
+                            if (postOrPreOnloading?.postOnloading) {
+                                textData = postOrPreOnloading?.textData;
+                            } else {
+                                textData = textArea ? textArea : selectedText;
+                            }
                             let payload = {
                                 body: {
                                     "application_name": "TaskScribe",
                                     "model_type": generateToken?.model_type,
                                     "usecase": sub_category?.useCase?.aiName,
-                                    "question": textArea? textArea: selectedText,
+                                    "question": textData,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
                                     //"enable_automasking": true
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": generateToken?.authToken
+                                },
+                                category: {
+                                    main_category: item?.displayName,
+                                    sub_category: sub_category?.displayName
                                 }
-
                             }
                             if (sub_category?.useCaseOption) {
                                 payload.body['usecase_options'] = sub_category?.useCaseOption?.aiName
@@ -751,6 +793,13 @@ export default {
 
                     const ps_main_category = (item) => {
                         try {
+                            let textData;
+                            if (postOrPreOnloading?.postOnloading) {
+                                textData = postOrPreOnloading?.textData;
+                            } else {
+                                textData = textArea ? textArea : selectedText;
+                            }
+
                             setPostShortcutLoading(true);
 
                             let payload = {
@@ -758,13 +807,17 @@ export default {
                                     "application_name": "TaskScribe",
                                     "model_type": generateToken?.model_type,
                                     "usecase": item?.useCase?.aiName,
-                                    "question": textArea? textArea: selectedText,
+                                    "question": textData,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
                                     // "enable_automasking": true
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": generateToken?.authToken
+                                },
+                                category: {
+                                    main_category: item?.displayName,
+                                    sub_category: ""
                                 }
 
                             }
@@ -816,7 +869,12 @@ export default {
                             setTextArea(e.target.value);
                             setPostShortcutLoading(false);
                             setSelecting(true);
-                            setSelectedText('')
+                            setSelectedText('');
+                            setPostOrPreOnloading({
+                                postOnloading: false,
+                                preOnloading: false,
+                                textData: ""
+                            });
                         } catch (err) {
                             console.log("Err in handleReplyTextArea:: ", err)
                         }
@@ -859,17 +917,64 @@ export default {
                         }
                     }
 
+                    const reloadFunc = (selectionData, index) => {
+                        try {
+                            console.log("reloadFunc ::", selectionData, index);
+                            setPostShortcutLoading(true);
+
+                            let payload = {
+                                body: {
+                                    "application_name": "TaskScribe",
+                                    "model_type": generateToken?.model_type,
+                                    "usecase": selectionData?.res_useCase_option?.usecase,
+                                    "question": selectionData?.showText,
+                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    // "enable_automasking": true
+                                },
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-Authtoken": generateToken?.authToken
+                                },
+                                category: {
+                                    main_category: selectionData?.category?.main_category,
+                                    sub_category: (selectionData?.category?.sub_category)?selectionData?.category?.sub_category:""
+                                }
+                            }
+
+                            if (selectionData?.res_useCase_option?.useCaseOption) {
+                                payload.body['usecase_options'] = selectionData?.res_useCase_option?.useCaseOption
+                            }
+                            console.log("Reload Function PAYLOAD ::", payload);
+                            autoSuggestApi(payload, isAppId)
+
+                        } catch (err) {
+                            console.log("Error in reloadFunc::", err)
+                        }
+                    }
+
                     const iconItems = (selectionData, index) => {
                         return (
                             <div className="iconItems">
-                                <div >${rotate_icon}</div>
-                                <div onClick={() => copyFunc(selectionData, index)}>
+                                <div 
+                                    onClick={() => reloadFunc(selectionData, index)}
+                                >${rotate_icon}</div>
+                                <div onClick={() => copyFunc(selectionData?.originalData, index)}>
                                     {(copied === index) && <span className={'copied-message'}>Copied</span>}
                                     ${copy_icon}
                                 </div>
                                 <div>${thumbs_up_icon}</div>
                                 <div>${thumbs_down_icon}</div>
-                                <div>${magic_icon}</div>
+                                <div
+                                    onClick={() => {setPostOrPreOnloading({
+                                            ...postOrPreOnloading,  // Spread the current state
+                                            postOnloading: true,     // Update the specific field
+                                            textData: selectionData?.showText
+                                        }); 
+                                        setPostShortcutLoading(false)}
+                                    }
+                                >
+                                    ${magic_icon}
+                                </div>
                             </div>
                         )
                     }
@@ -891,7 +996,7 @@ export default {
                                     </div>                            
                                 </div>
                                 <div className={'overall_icon_pack'}>
-                                    <div className="action_items">Find Action Items/Bullets</div>
+                                    <div className="action_items">{selection?.category?.main_category}/{selection?.category?.sub_category}</div>
 
                                     {/* Render formatted content without dangerouslySetInnerHTML */}
                                     {/*<div className="ac_content">
@@ -901,7 +1006,7 @@ export default {
                                         {(selection?.formattedResponseData || "")} 
                                     </div>
 
-                                    {iconItems(selection?.originalData, index)}
+                                    {iconItems(selection, index)}
                                 </div>
                             </>                            
                         )
@@ -925,23 +1030,106 @@ export default {
                         );
                     };
 
+                    const dashboardComponents = () => {
+                        return (
+                            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                {!(isSelecting) && initialPage()}   
+                                {/*{(selectedText != "") && selected_txt_post_blog()}*/}
+                                {/* Render list of selected texts and responses */}
+                                {selections.length > 0 && selections.map((selection, index) => (
+                                    <div key={index} ref={index === selections.length - 1 ?scrollRef:null}>
+                                        {selected_txt_post_blog(selection, index)}
+                                        {/* Place scrollRef after the last response */}
+                                        {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
+                                    </div>
+                                ))}
+                            </div>  
+                        )
+                    }
+
+                    const loginComponent = () => {
+                        return (
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: "12px 0px 0px"}}>
+                            <div>
+                                <div 
+                                style={{
+                                    margin: "0px 0px 10px",
+                                    fontFamily: "poppins",
+                                    fontSize: "16px",
+                                    fontWeight: "600",
+                                    color: "#282829"
+                                }}
+                                >
+                                Email
+                                </div>
+                                <input
+                                style={
+                                    {
+                                    padding: '10px',
+                                    border: '1px solid #B3B3B3',
+                                    background: '#FFFFFF',
+                                    borderRadius: '8px',
+                                    color: '#808080',
+                                    fontFamily: 'Poppins',
+                                    fontSize: '16px',
+                                    width: '100%',
+                                    outline: 'none'
+                                    }
+                                }
+                                id="email_id"
+                                value={isEmail}
+                                readOnly
+                                />
+                            </div>
+                            {!(isLoading) ?
+                                <button
+                                style={{
+                                    padding: "12px 48px",
+                                    borderRadius: "40px",
+                                    background: " #005EFF",
+                                    color: "#FFFFFF",
+                                    border: "1px solid #005EFF",
+                                    margin: "21px 0px 11px",
+                                    fontFamily: 'Poppins',
+                                    fontSize: '16px',
+                                    cursor: 'pointer'
+                                }}
+                                onClick={() => loginBtnAPI()}
+                                >
+                                Login
+                                </button>
+                                :
+                                <button
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    gap: "8px",
+                                    alignItems: "center",
+                                    padding: "12px 48px",
+                                    borderRadius: "40px",
+                                    background: " #005EFF",
+                                    color: "#FFFFFF",
+                                    border: "1px solid #005EFF",
+                                    margin: "21px 0px 11px",
+                                    fontFamily: 'Poppins',
+                                    fontSize: '16px',
+                                    cursor: 'not-allowed'
+                                }}
+                                disabled
+                                >
+                                <span className={'loader'}></span>  Loading...
+                                </button>
+
+                            }
+                            </div >
+                        )
+                    }
+
                     return (
                         <div> 
+                            <div>{loginComponent()}</div>
                             <div>  
-                                <div>
-                                    {!(isSelecting) && initialPage()}   
-                                    {/*{(selectedText != "") && selected_txt_post_blog()}*/}
-                                    {/* Render list of selected texts and responses */}
-                                    {selections.length > 0 && selections.map((selection, index) => (
-                                        <div key={index}>
-                                            {selected_txt_post_blog(selection, index)}
-                                            {/* Place scrollRef after the last response */}
-                                            {index === selections.length - 1 && <div ref={scrollRef}></div>}
-                                        </div>
-                                    ))}
-                                </div>                                                   
-                                
-                                {((textArea != "") || (selectedText != "")) &&post_pre_select_box()}
+                                {((textArea != "") || (selectedText != "")|| (postOrPreOnloading?.textData)) &&post_pre_select_box()}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
                             </div> 
