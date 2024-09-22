@@ -1128,7 +1128,8 @@ export default {
                     return (
                         <div> 
                             <div>{loginComponent()}</div>
-                            <div>  
+                            <div> 
+                                {dashboardComponents()} 
                                 {((textArea != "") || (selectedText != "")|| (postOrPreOnloading?.textData)) &&post_pre_select_box()}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
