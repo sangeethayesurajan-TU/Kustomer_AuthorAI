@@ -338,6 +338,7 @@ export default {
                         preOnloading: false,
                         textData: ""
                     });
+                    const [isApiCall, setApiCall] = useState(true);
 
                     const findUseCaseOption = (useCaseOption) => {
                         try {
@@ -473,103 +474,109 @@ export default {
                     }, [selections]);
 
                     useEffect(() => {
-                        let pendingClick = 0;
 
-                        const handleSelection = () => {
-                            const selection = window.getSelection();
-                            const selectedText = selection.toString().trim();
+                        if (isLoggedStatus && isSettingStatus) {
+                            let pendingClick = 0;
 
-                            if (selectedText.length > 0) {
-                                setSelectedText(selectedText);
-                                setSelecting(true);
-                                setPostShortcutLoading(false);
-                                console.log('Text selected:', selectedText);
-                            } else {
-                                // setSelecting(false);
-                            }
-                        };
+                            const handleSelection = () => {
+                                const selection = window.getSelection();
+                                const selectedText = selection.toString().trim();
 
-                        const xorClick = (e) => {
-                            // Clear any pending single-clicks if a new click is detected
-                            if (pendingClick) {
-                                clearTimeout(pendingClick);
-                                pendingClick = 0;
-                            }
+                                if (selectedText.length > 0) {
+                                    setSelectedText(selectedText);
+                                    setSelecting(true);
+                                    setPostShortcutLoading(false);
+                                    console.log('Text selected:', selectedText);
+                                } else {
+                                    // setSelecting(false);
+                                }
+                            };
 
-                            switch (e.detail) {
-                                case 1:
-                                    // Schedule single-click action if no double-click follows
-                                    pendingClick = setTimeout(() => {
-                                        // const selection = window.getSelection();
-                                        // const selectedText = selection.toString().trim();
-
-                                        // if (selectedText.length > 0) {
-                                        //     setSelectedText(selectedText);
-                                        //     setSelecting(true);
-                                        //     console.log('Single click - text selected:', selectedText);
-                                        // } else {
-                                        //     setSelecting(false);
-                                        // }
-                                        console.log("Into this one Single")
-                                        // setSelecting(true)
-                                    }, 500); // Delay to wait for double-click
-                                    break;
-
-                                case 2:
-                                    // Immediately handle double-click action
+                            const xorClick = (e) => {
+                                // Clear any pending single-clicks if a new click is detected
+                                if (pendingClick) {
                                     clearTimeout(pendingClick);
-                                    const selection = window.getSelection();
-                                    const selectedText = selection.toString().trim();
-                                    setTextArea('');
-                                    setPostOrPreOnloading({
-                                        postOnloading: false,
-                                        preOnloading: false,
-                                        textData: ""
-                                    });
+                                    pendingClick = 0;
+                                }
 
-                                    if (selectedText.length > 0) {
-                                        setSelectedText(selectedText);
-                                        setSelecting(true);
-                                        setPostShortcutLoading(false);
-                                        console.log('Double click - text selected:', selectedText);
-                                    } 
-                                    else {
-                                        console.log("Into this one Double")
-                                        // setSelecting();
-                                    }
-                                    break;
+                                switch (e.detail) {
+                                    case 1:
+                                        // Schedule single-click action if no double-click follows
+                                        pendingClick = setTimeout(() => {
+                                            // const selection = window.getSelection();
+                                            // const selectedText = selection.toString().trim();
 
-                                default:
-                                    console.log('Higher multi-click actions can be added as needed');
-                                    break;
-                            }
-                        };
+                                            // if (selectedText.length > 0) {
+                                            //     setSelectedText(selectedText);
+                                            //     setSelecting(true);
+                                            //     console.log('Single click - text selected:', selectedText);
+                                            // } else {
+                                            //     setSelecting(false);
+                                            // }
+                                            console.log("Into this one Single")
+                                            // setSelecting(true)
+                                        }, 500); // Delay to wait for double-click
+                                        break;
 
-                        const handleMouseUp = () => {
-                            const selection = window.getSelection();
-                            const selectedText = selection.toString().trim();
+                                    case 2:
+                                        // Immediately handle double-click action
+                                        clearTimeout(pendingClick);
+                                        const selection = window.getSelection();
+                                        const selectedText = selection.toString().trim();
+                                        setTextArea('');
+                                        setPostOrPreOnloading({
+                                            postOnloading: false,
+                                            preOnloading: false,
+                                            textData: ""
+                                        });
 
-                            if (selectedText.length > 0) {
-                                setSelectedText(selectedText);
-                                setSelecting(true);
-                                setPostShortcutLoading(false);
-                                console.log('Mouse selection - text selected:', selectedText);
-                            } else {
-                                // setSelecting(false);
-                            }
-                        };
+                                        if (selectedText.length > 0) {
+                                            setSelectedText(selectedText);
+                                            setSelecting(true);
+                                            setPostShortcutLoading(false);
+                                            console.log('Double click - text selected:', selectedText);
+                                        } 
+                                        else {
+                                            console.log("Into this one Double")
+                                            // setSelecting();
+                                        }
+                                        break;
 
-                        // Add event listener for click and mouseup events
-                        document.addEventListener('click', xorClick, false);
-                        document.addEventListener('mouseup', handleMouseUp, false);
+                                    default:
+                                        console.log('Higher multi-click actions can be added as needed');
+                                        break;
+                                }
+                            };
 
-                        // Cleanup event listeners on component unmount
-                        return () => {
-                            clearTimeout(pendingClick);
-                            document.removeEventListener('click', xorClick);
-                            document.removeEventListener('mouseup', handleMouseUp);
-                        };
-                    }, []);
+                            const handleMouseUp = () => {
+                                const selection = window.getSelection();
+                                const selectedText = selection.toString().trim();
+
+                                if (selectedText.length > 0) {
+                                    setSelectedText(selectedText);
+                                    setSelecting(true);
+                                    setPostShortcutLoading(false);
+                                    console.log('Mouse selection - text selected:', selectedText);
+                                } else {
+                                    // setSelecting(false);
+                                }
+                            };
+
+                            // Add event listener for click and mouseup events
+                            document.addEventListener('click', xorClick, false);
+                            document.addEventListener('mouseup', handleMouseUp, false);
+
+                            // Cleanup event listeners on component unmount
+                            return () => {
+                                clearTimeout(pendingClick);
+                                document.removeEventListener('click', xorClick);
+                                document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                        }  else {
+                            setSelectedText('')
+                        }
+
+                    }, [isLoggedStatus, isSettingStatus, selectedText]);
 
                     useEffect(() => {
                         if ((selectedText == "") && (textArea == "")) {
@@ -580,14 +587,23 @@ export default {
 
                     useEffect(() => {
                         if (isAppId?.appId && appSettings?.default) {
-                            globalConfigApi();
-                            loginBtnAPI()
+                            // globalConfigApi();
+                            // loginBtnAPI()
                         }
                         
                     }, [isAppId]);
 
                     useEffect(() => {
-                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading])
+                        if ((isSettingStatus) && (isApiCall)) {
+                            if (isEmail) {
+                                // settingResponse();
+                                settingBtnAPI()
+                            }
+                        }
+                    }, [isSettingStatus, isApiCall, isEmail]);
+
+                    useEffect(() => {
+                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail])
 
                     async function loginBtnAPI() {
                         // setLoading(true);
@@ -616,7 +632,7 @@ export default {
                             if (loginResponse?.status === true) {
                                 sessionStorage.setItem('authorAILoggedIn', true);
                                 setLoggedStatus(true);
-                                // setApiCall(false)
+                                setApiCall(false)
                                 // settingResponse();
                                 settingBtnAPI()
                             }
@@ -655,7 +671,7 @@ export default {
                                 }
                             }
                             );
-                            let settingRes = data?.data?.attributes?.responseBody
+                            let settingRes = data?.data?.attributes?.responseBody;
                             if (settingRes?.message === "Authentication failed ") {
                                 sessionStorage.setItem('authorAIsettingStatus', false);
                                 setSettingStatus(false);
@@ -671,6 +687,7 @@ export default {
                                 // 'Success'
                                 // );
                                 // await logsAPI({ isAuthuu: isAppId, user_setting: settingRes, PAYLOAD_FOR_EVENT: payload, log_message: logMsg });                                
+                                globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);  
                                 const { authToken, clientAuthToken, model_type, usecase } = await generateTokenApi(settingRes, isEmail, isAppId);
                                 setGenerateToken(
                                     {
@@ -686,7 +703,7 @@ export default {
                         }
                     }
                     
-                    const globalConfigApi = async () => {
+                    const globalConfigApi = async (x_apitoken, x_apikey) => {
                         try {
                             let endpoint = '/v1/commands/'+isAppId.appId+'.app.global_config_api/run';
                             console.log("endpoint ", endpoint);
@@ -695,8 +712,8 @@ export default {
                                 method: 'POST',                            
                                 body: {                                    
                                     headers: {
-                                        "x-apitoken": "464c6fe58f214ce5255d6df19878e6067bda7fbcc2e0defc60b827f8eb95f038",
-                                        "x-apikey": "wdayP9T8g7K5rro3u3ZcgCgbBnsRHRUvNCUmxatY7hwpQ6kKu5nb4gUd255VUdwH"                                    
+                                        "x-apitoken": x_apitoken,
+                                        "x-apikey": x_apikey                                    
                                     }                         
                                 }
                             },(err, response) => {                                    
@@ -1127,13 +1144,13 @@ export default {
 
                     return (
                         <div> 
-                            <div>{loginComponent()}</div>
-                            <div> 
+                            <div>{(!(isSettingStatus)) && loginComponent()}</div>
+                            {((isLoggedStatus) && (isSettingStatus)) && <div> 
                                 {dashboardComponents()} 
                                 {((textArea != "") || (selectedText != "")|| (postOrPreOnloading?.textData)) &&post_pre_select_box()}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
-                            </div> 
+                            </div> }
                             <style>{${styleSection}}</style>
                         </div>
                     )
