@@ -28,6 +28,25 @@ const pre_magic_icon = `<svg width="34" height="34" viewBox="0 0 34 34" fill="no
 </svg>
 `;
 
+const templates_icon = `<svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.049 1.92664C10.3483 1.00537 11.6517 1.00538 11.951 1.92664L13.4699 6.60055C13.6038 7.01254 13.9877 7.29148 14.4209 7.29149L19.3354 7.29168C20.3041 7.29172 20.7068 8.53127 19.9232 9.10067L15.9474 11.9895C15.5969 12.2441 15.4503 12.6955 15.5841 13.1075L17.1026 17.7815C17.4019 18.7028 16.3475 19.4689 15.5638 18.8995L11.5878 16.011C11.2373 15.7564 10.7627 15.7564 10.4122 16.011L6.43622 18.8995C5.65252 19.4689 4.5981 18.7028 4.8974 17.7815L6.41589 13.1075C6.54974 12.6955 6.40309 12.2441 6.05263 11.9895L2.07683 9.10067C1.29317 8.53127 1.69592 7.29172 2.66461 7.29168L7.57911 7.29149C8.01231 7.29148 8.39623 7.01254 8.53011 6.60055L10.049 1.92664Z" stroke="#282829" stroke-width="1.5"/>
+</svg>
+`;
+
+const custom_prompt_icon = `<svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 3H3C1.89543 3 1 3.89543 1 5V16C1 17.1046 1.89543 18 3 18H14C15.1046 18 16 17.1046 16 16V11M14.5858 1.58579C15.3668 0.804738 16.6332 0.804738 17.4142 1.58579C18.1953 2.36683 18.1953 3.63316 17.4142 4.41421L8.82842 13H6L6 10.1716L14.5858 1.58579Z" stroke="#282829" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+const liked_thumbs_up = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#8217FF" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.71442 20.5714H5.143C4.68834 20.5714 4.2523 20.3908 3.93081 20.0693C3.60932 19.7478 3.42871 19.3118 3.42871 18.8571V12.8571C3.42871 12.4025 3.60932 11.9664 3.93081 11.6449C4.2523 11.3235 4.68834 11.1428 5.143 11.1428H7.71442M13.7144 9.42856V5.99999C13.7144 5.318 13.4435 4.66395 12.9613 4.18171C12.479 3.69948 11.825 3.42856 11.143 3.42856L7.71442 11.1428V20.5714H17.383C17.7964 20.5761 18.1976 20.4312 18.5126 20.1634C18.8277 19.8957 19.0353 19.523 19.0973 19.1143L20.2801 11.4C20.3174 11.1543 20.3009 10.9034 20.2316 10.6648C20.1623 10.4261 20.0419 10.2054 19.8789 10.0179C19.7158 9.83033 19.5139 9.6805 19.2872 9.57874C19.0605 9.47699 18.8143 9.42574 18.5659 9.42856H13.7144Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+const disliked_thumbs_down = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#8217FF" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.71442 3.42858H5.143C4.68834 3.42858 4.2523 3.6092 3.93081 3.93069C3.60932 4.25218 3.42871 4.68821 3.42871 5.14287V11.1429C3.42871 11.5975 3.60932 12.0336 3.93081 12.3551C4.2523 12.6765 4.68834 12.8572 5.143 12.8572H7.71442M13.7144 14.5714V18C13.7144 18.682 13.4435 19.3361 12.9613 19.8183C12.479 20.3005 11.825 20.5714 11.143 20.5714L7.71442 12.8572V3.42858H17.383C17.7964 3.42391 18.1976 3.56881 18.5126 3.83658C18.8277 4.10435 19.0353 4.47695 19.0973 4.88573L20.2801 12.6C20.3174 12.8457 20.3009 13.0966 20.2316 13.3352C20.1623 13.5739 20.0419 13.7946 19.8789 13.9821C19.7158 14.1697 19.5139 14.3195 19.2872 14.4213C19.0605 14.523 18.8143 14.5743 18.5659 14.5714H13.7144Z" stroke="#8217FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
 let styledData = `
     .write_paste_selected_txt {       
         padding: 8px 16px 8px 16px;
@@ -56,6 +75,26 @@ let styledData = `
         background: #FFFFFF;
     }
 
+    .preShortcutLoadingv {
+        background: #F6F6F6;
+        padding: 5px;
+        margin: 10px 0px;
+        width: 100%;
+    }
+
+    .pre_shortcut_list {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #C694FF;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: poppins;
+        background: #FFFFFF;
+        width: 72%;
+        margin: 5px auto;
+    }
+
     .ps_single_item {
         border-bottom: 1px solid #F2F2F2;
         display: flex;
@@ -80,6 +119,33 @@ let styledData = `
         display: flex;
         padding: 12px 7px;
         justify-content: space-between;
+        align-items: center;
+        background-color: #F3E8FF;
+    }
+
+    .pr_single_item {
+        border-bottom: 1px solid #F2F2F2;
+        display: flex;
+        padding: 12px 6px;
+        align-items: center;
+        cursor: default;
+        gap: 10px;
+    }
+
+    .pr_single_item:first-child {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .pr_single_item:last-child {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .pr_single_item:hover {
+        border-bottom: 1px solid #F2F2F2;
+        display: flex;
+        padding: 12px 7px;
         align-items: center;
         background-color: #F3E8FF;
     }
@@ -212,6 +278,7 @@ let styledData = `
 
     .postShortcutLoadingv {
         background: #F6F6F6;
+        margin: 10px 0px;
         padding: 5px;
     }
 
@@ -227,8 +294,35 @@ let styledData = `
         -webkit-animation: spin 2s linear infinite;
         animation: spin 2s linear infinite;
     }
+
+    .copy_data {
+        position: relative;
+    }
+
+    .copied-message {
+        background: black;
+        color: white;
+        padding: 1.5px 5px;
+        position: absolute;
+        bottom: 30px;
+        left: -11px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: poppins;
+        text-align: center;        
+        animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
 `
-let styleSection = `\`${styledData}\``; 
+let styleSection = `\`${styledData}\``;
 
 export default {
     name: "sample_authorai",
@@ -339,6 +433,38 @@ export default {
                         textData: ""
                     });
                     const [isApiCall, setApiCall] = useState(true);
+                    const [preShortcuts, setPreShortcuts] = useState({
+                        preOnloading: false,
+                        preShortcutOption: ""
+                    });
+                    const [likedState, setLikedState] = useState({});
+                    const [dislikedState, setDislikedState] = useState({});
+
+                    // Handle like click
+                    const handleLikeClick = (index) => {
+                        setLikedState(prevState => ({
+                            ...prevState,
+                            [index]: !prevState[index] // Toggle like state for the specific item
+                        }));
+
+                        setDislikedState(prevState => ({
+                            ...prevState,
+                            [index]: false // Ensure the corresponding dislike is reset for the same item
+                        }));
+                    };
+
+                    // Handle dislike click
+                    const handleDislikeClick = (index) => {
+                        setDislikedState(prevState => ({
+                            ...prevState,
+                            [index]: !prevState[index] // Toggle dislike state for the specific item
+                        }));
+
+                        setLikedState(prevState => ({
+                            ...prevState,
+                            [index]: false // Ensure the corresponding like is reset for the same item
+                        }));
+                    };
 
                     const findUseCaseOption = (useCaseOption) => {
                         try {
@@ -411,7 +537,13 @@ export default {
                                 // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
                                 console.log(" payload payload ", response?.data?.attributes?.responseBody)
                                 setAutoLoading(false);
-                                let formattedResponseData = highlightHeadings(response?.data?.attributes?.responseBody?.answer);
+                                setSelectedText('');
+                                let formattedResponseData;
+                                if (payload?.body?.usecase == "summarize" || payload?.body?.usecase == "fix_spelling_grammar" || payload?.body?.usecase == "helping_pronunce") {
+                                    formattedResponseData = highlightHeadings(response?.data?.attributes?.responseBody?.answer);
+                                } else {
+                                    formattedResponseData = response?.data?.attributes?.responseBody?.answer;
+                                }
                                 console.log("formattedResponse formattedResponse ", formattedResponseData)
                                 let useCaseOption = findUseCaseOption(response?.data?.attributes?.responseBody);
                                 setPostpreConfig({
@@ -526,8 +658,11 @@ export default {
                                         setTextArea('');
                                         setPostOrPreOnloading({
                                             postOnloading: false,
-                                            preOnloading: false,
                                             textData: ""
+                                        });
+                                        setPreShortcuts({
+                                            ...preShortcuts,
+                                            preOnloading: false
                                         });
 
                                         if (selectedText.length > 0) {
@@ -555,10 +690,19 @@ export default {
                                 if (selectedText.length > 0) {
                                     setSelectedText(selectedText);
                                     setSelecting(true);
+                                    setPostOrPreOnloading({
+                                        ...postOrPreOnloading
+                                    });
+                                    setPreShortcuts({
+                                        ...preShortcuts,
+                                        preOnloading: false
+                                    });
                                     setPostShortcutLoading(false);
                                     console.log('Mouse selection - text selected:', selectedText);
                                 } else {
                                     // setSelecting(false);
+                                    // setSelectedText('');
+                                    // setPostShortcutLoading(true);
                                 }
                             };
 
@@ -580,9 +724,23 @@ export default {
 
                     useEffect(() => {
                         if ((selectedText == "") && (textArea == "")) {
-                            setSelecting(false);
-                            setPostShortcutLoading(false);
+                            // setSelecting(false);
+                            setPostShortcutLoading(true);
                         }
+                        if ((selectedText == "") && (textArea == "") && (selections?.length == 0)) {
+                            setSelecting(false);
+                            // setPostShortcutLoading(false);
+                            // setPostShortcutLoading(true);
+                        }
+
+                        // if (textArea == "") {
+                        //     setSelecting(false);
+                        //     // setPostShortcutLoading(true);
+                        //     // setPostOrPreOnloading({
+                        //     //     ...postOrPreOnloading,
+                        //     //     preOnloading: true
+                        //     // });
+                        // }
                     }, [selectedText, textArea]);
 
                     useEffect(() => {
@@ -722,8 +880,13 @@ export default {
                                 } 
                             }
                             );
+                            let custom_prompt = {
+                                displayName: "Write a Custom Prompt",
+                                name: "custom_prompt"
+                            };
                             let configRes = response?.data?.attributes?.responseBody;
                             console.log("configRes", configRes);
+                            configRes?.data?.preShortcuts?.push(custom_prompt);
                             setPostpreConfig({
                                 postShortcuts: configRes?.data?.postShortcuts,
                                 preShortcuts: configRes?.data?.preShortcuts
@@ -838,8 +1001,8 @@ export default {
                                 }
 
                             }
-                            if (item?.usecase_options) {
-                                payload.body['usecase_options'] = item?.usecase_options?.aiName
+                            if (item?.useCaseOption) {
+                                payload.body['usecase_options'] = item?.useCaseOption?.aiName
                             }
                             console.log("PAYLOAD PAYLOAD ::", payload);
                             autoSuggestApi(payload, isAppId)
@@ -883,15 +1046,25 @@ export default {
 
                     const handleReplyTextArea = (e) => {
                         try {
+                            if (preShortcuts?.preOnloading && preShortcuts?.preShortcutOption) {
+                                console.log("Into this ")
+                                setPostShortcutLoading(true);   // not to show
+                            } else {
+                                console.log("Into 2 ")
+                                setPostShortcutLoading(false);
+                                setPostOrPreOnloading({
+                                    postOnloading: false,
+                                    textData: ""
+                                });
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    preOnloading: false
+                                })
+                            }
+                            console.log("sangeeetha")
                             setTextArea(e.target.value);
-                            setPostShortcutLoading(false);
                             setSelecting(true);
                             setSelectedText('');
-                            setPostOrPreOnloading({
-                                postOnloading: false,
-                                preOnloading: false,
-                                textData: ""
-                            });
                         } catch (err) {
                             console.log("Err in handleReplyTextArea:: ", err)
                         }
@@ -907,8 +1080,22 @@ export default {
                                         className={'textarea_input'}
                                         placeholder={'Write/Select any text...'}
                                         onChange={handleReplyTextArea}
+                                        onFocus={() => setPreShortcuts({
+                                            ...preShortcuts,
+                                            preOnloading: false
+                                        })}
                                     />
-                                    <div className={'magic_icon'}>
+                                    <div 
+                                        className={'magic_icon'}
+                                        onClick={() => {
+                                            setPreShortcuts({
+                                                ...preShortcuts,  // Spread the current state
+                                                preOnloading: true     // Update the specific field                                     
+                                            });
+                                            setPostShortcutLoading(true); // Make it off by giving opposite
+                                            setSelectedText('')
+                                        }}
+                                    >
                                         ${pre_magic_icon}
                                     </div>
                                 </div>
@@ -975,12 +1162,16 @@ export default {
                                 <div 
                                     onClick={() => reloadFunc(selectionData, index)}
                                 >${rotate_icon}</div>
-                                <div onClick={() => copyFunc(selectionData?.originalData, index)}>
-                                    {(copied === index) && <span className={'copied-message'}>Copied</span>}
+                                <div className={'copy_data'} onClick={() => copyFunc(selectionData?.originalData, index)}>
+                                    {(copied === index) && <span className={'copied-message'}>Copied!</span>}
                                     ${copy_icon}
                                 </div>
-                                <div>${thumbs_up_icon}</div>
-                                <div>${thumbs_down_icon}</div>
+                                <div onClick={() => handleLikeClick(index)}>
+                                    {(likedState[index]) ? ${liked_thumbs_up} : ${thumbs_up_icon}}                                    
+                                </div>
+                                <div onClick = {() => handleDislikeClick(index)}>
+                                    {(dislikedState[index]) ? ${disliked_thumbs_down} : ${thumbs_down_icon}}
+                                </div>
                                 <div
                                     onClick={() => {setPostOrPreOnloading({
                                             ...postOrPreOnloading,  // Spread the current state
@@ -996,9 +1187,38 @@ export default {
                         )
                     }
 
+                    const pre_shortcut_content = () => {
+                        return (
+                            <div className={'pre_shortcut_list'}>
+                                {(postpreConfig?.preShortcuts || []).map((preshortcut) => {
+                                    return (
+                                        <div className={'pr_single_item'}>
+                                            {(preshortcut?.name == "TEMPLATE_MENU") ?
+                                                <div style={{margin: "2px 0px 0px"}}>
+                                                    ${templates_icon}
+                                                </div>
+                                                :
+                                                ((preshortcut?.name == "custom_prompt") ?
+                                                    <div style={{margin: "2px 0px 0px"}}>${custom_prompt_icon}</div>
+                                                    :
+                                                    <></>
+                                                )
+                                            }
+                                            <div>{preshortcut?.displayName}</div>
+                                        </div>
+                                    )
+                                })
+                                }
+                            </div>
+                        )
+                    }
+
                     const post_pre_select_box = () => {
                         return (
-                            <div className={'postShortcutLoadingv'}>{!(postShortcutLoading)&&post_shortcut_content()}</div>
+                            <>
+                                {!(postShortcutLoading) && <div className={'postShortcutLoadingv'}>{post_shortcut_content()}</div>}
+                                {(preShortcuts?.preOnloading) && <div className={'preShortcutLoadingv'}>{pre_shortcut_content()}</div>}
+                            </>
                         )
                     }
 
@@ -1053,6 +1273,7 @@ export default {
                                 {!(isSelecting) && initialPage()}   
                                 {/*{(selectedText != "") && selected_txt_post_blog()}*/}
                                 {/* Render list of selected texts and responses */}
+                                
                                 {selections.length > 0 && selections.map((selection, index) => (
                                     <div key={index} ref={index === selections.length - 1 ?scrollRef:null}>
                                         {selected_txt_post_blog(selection, index)}
@@ -1060,6 +1281,17 @@ export default {
                                         {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
                                     </div>
                                 ))}
+                                {(selectedText) &&
+                                    <div className={'selected_txt_post_blog'}>
+                                        <div className={'st_response'}>
+                                            <div className={'select_text_heading'}>Selected Text</div>
+                                            {/* <div className={'query'}>{selectedText}</div> */}
+
+                                            <div className={'query'}>{selectedText}</div>
+
+                                        </div>
+                                    </div>
+                                }
                             </div>  
                         )
                     }
@@ -1147,7 +1379,7 @@ export default {
                             <div>{(!(isSettingStatus)) && loginComponent()}</div>
                             {((isLoggedStatus) && (isSettingStatus)) && <div> 
                                 {dashboardComponents()} 
-                                {((textArea != "") || (selectedText != "")|| (postOrPreOnloading?.textData)) &&post_pre_select_box()}
+                                {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
                             </div> }
