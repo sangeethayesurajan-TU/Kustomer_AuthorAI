@@ -8,7 +8,7 @@ console.log("apikey => ", apikey, "authtoken ",authtoken)
 
 export default {
     app: "sample_authorai",
-    version: "0.0.64",
+    version: "0.0.70",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -61,7 +61,20 @@ export default {
             cacheSeconds: 15,
             httpMethod: "post"
         },
-
+        {
+            name: "exhealth_check_api",            
+            displayName: "Exhealth Api",
+            url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
+            cacheSeconds: 15,
+            httpMethod: "post"
+        },
+        {
+            name: "refresh_token",
+            displayName: "Refresh Api",
+            url: "https://orchestrator.taskus.com/api/user/refreshToken",
+            cacheSeconds: 15,
+            httpMethod: "post"
+        }
     ],
     settings: {
         default: {

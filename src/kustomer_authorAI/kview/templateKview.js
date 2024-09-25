@@ -321,6 +321,46 @@ let styledData = `
             opacity: 0;
         }
     }
+
+    .spinner_bounce > div {
+        width: 10px;
+        height: 10px;
+        background-color: #333;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: bounceDelay 1.4s infinite ease-in-out both;
+        animation: bounceDelay 1.4s infinite ease-in-out both;
+    }
+    .spinner_bounce .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+    .spinner_bounce .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+    @-webkit-keyframes bounceDelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0);
+        }
+        40% {
+            -webkit-transform: scale(1);
+        }
+    }
+    @keyframes bounceDelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0);
+            transform: scale(0);
+        }
+        40% {
+            -webkit-transform: scale(1);
+            transform: scale(1);
+        }
+    }
 `
 let styleSection = `\`${styledData}\``;
 
@@ -439,6 +479,137 @@ export default {
                     });
                     const [likedState, setLikedState] = useState({});
                     const [dislikedState, setDislikedState] = useState({});
+                    const [user_setting_state, setUser_setting_state] = useState({
+                        refreshToken: "",
+                        settingResponse: {},
+                        setting_token: ""
+                    });
+
+                    const exhealth = async () => {
+                        try {
+                            let endpoint = '/v1/commands/' + isAppId.appId + '.app.exhealth_check_api/run';
+                            let auth_token = "Bearer"+" "+user_setting_state?.setting_token;
+                            let exhealthResponse = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                body: {
+                                    "headers": {
+                                        "Content-Type": "application/json",
+                                        "Authorization": auth_token
+                                    },
+                                    "body": {
+                                        "user_email": user_setting_state?.settingResponse?.email,
+                                        "applicationName": "Prompto",
+                                        "user_id": user_setting_state?.settingResponse?.user_id,
+                                        "app_id": user_setting_state?.settingResponse?.app_id,
+                                        "app_name": "Kustomer",
+                                        "campaign_name": user_setting_state?.settingResponse?.campaign_name,
+                                        "campaign_id": user_setting_state?.settingResponse?.campaign_id,
+                                        "lob_id": user_setting_state?.settingResponse?.lob_id,
+                                        "lob_name": user_setting_state?.settingResponse?.lob_name,
+                                        "currentUserAppVersion": "1.0.0"
+                                    }
+                                }
+                            },
+                                (err, response) => {
+                                    if (err) {
+                                        console.log("Into exhealth Error ", err)
+                                        return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                        return response.responseBody.errors.message;
+                                    }
+                                }
+                            );
+                            if (exhealthResponse?.data?.attributes?.responseBody) {
+                                console.log("Exhealth Response ::", exhealthResponse?.data?.attributes?.responseBody)
+                                return exhealthResponse?.data?.attributes?.responseBody;
+                            }
+                        } catch (err) {
+                            console.log("Error in exhealth::", err);
+                        }
+                    }
+
+                    const refreshTokenApi = async (refresh_token) => {
+                        try {
+                            let endpoint = '/v1/commands/' + isAppId.appId + '.app.refresh_token/run';
+                            let token = 'Bearer' + " " + refresh_token;
+                            let refresh_res = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                headers: {
+                                    'Authorization': token,
+                                    "Content-Type": "application/json"
+                                }
+                            },
+                                (err, response) => {
+                                    if (err) {
+                                        console.log("Into refreshTokenApi Error ", err)
+                                        return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                        return response.responseBody.errors.message;
+                                    }
+                                }
+                            );
+                            if (refresh_res?.data?.attributes?.responseBody) {
+                                return refresh_res?.data?.attributes?.responseBody;
+                            }
+                        } catch (err) {
+                            console.log("Error in refreshTokenApi::", err);
+                        }
+                    }
+
+                    useEffect(() => {
+                        function healthCheckUp() {
+                            try {
+                                if (user_setting_state?.refreshToken) {
+                                    exhealth().then(async (response) => {
+
+                                    }).catch((error) => {
+                                        if (error.message == "Invalid JWT Token") {
+                                            refreshTokenApi(user_setting_state?.refreshToken)
+                                                .then((res) => {
+                                                    setUser_setting_state({
+                                                        ...user_setting_state,
+                                                        refreshToken: res?.refreshToken,
+                                                        setting_token: res?.authToken
+                                                    });
+                                                    if (res?.authToken) return exhealth();
+                                                }).catch((error) => {
+                                                    handleSessionInvalidation(error);
+                                                })
+                                        }
+                                    })
+                                } 
+
+                                function handleSessionInvalidation(error) {
+                                    // const datum = sessionStorage.getItem('isLoggedIn');
+                                    setTimeout(() => {
+                                        setLoading(false);
+                                        setSettingStatus(false);
+                                    }, 5000);
+                                    setLoading(false);
+                                    sessionStorage.setItem('authorAILoggedIn', false);
+                                    setLoggedStatus(false);
+                                    setApiCall(false);
+                                    sessionStorage.setItem('authorAIsettingStatus', false);
+                                    setSettingStatus(false);
+
+                                    throw error;
+                                }
+
+                            } catch (error) {
+                                console.log("Error in healthCheckUp::", error)
+                            }
+                        }
+
+                        const intervalId = setInterval(() => {
+                            healthCheckUp()
+                        }, 5000)
+
+                        // Clear the interval when the component is unmounted or when isRefreshToken changes
+                        return () => clearInterval(intervalId);
+
+                    }, [user_setting_state?.refreshToken])
 
                     // Handle like click
                     const handleLikeClick = (index) => {
@@ -761,7 +932,7 @@ export default {
                     }, [isSettingStatus, isApiCall, isEmail]);
 
                     useEffect(() => {
-                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail])
+                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, user_setting_state, isAutoLoading])
 
                     async function loginBtnAPI() {
                         // setLoading(true);
@@ -830,6 +1001,11 @@ export default {
                             }
                             );
                             let settingRes = data?.data?.attributes?.responseBody;
+                            setUser_setting_state({
+                                refreshToken: settingRes?.refresh_token,
+                                settingResponse: settingRes,
+                                setting_token: settingRes?.authToken
+                            });
                             if (settingRes?.message === "Authentication failed ") {
                                 sessionStorage.setItem('authorAIsettingStatus', false);
                                 setSettingStatus(false);
@@ -932,7 +1108,24 @@ export default {
                         )
                     }
 
-                    const post_sub_category_items = (e, item, sub_category, index) => {
+                    const regenerate_authToken = async () => {
+                        try {
+                            const { authToken, clientAuthToken, model_type, usecase } = await generateTokenApi(user_setting_state?.settingResponse, isEmail, isAppId);
+                            setGenerateToken(
+                                {
+                                    authToken: authToken,
+                                    client_authtoken: clientAuthToken,
+                                    model_type: model_type,
+                                    usecase: usecase
+                                }
+                            );
+                            return { authToken, model_type };
+                        } catch (error) {
+                            console.log("Error in regenerate_authToken::", error);
+                        }
+                    }
+
+                    const post_sub_category_items = async (e, item, sub_category, index) => {
                         try {
                             e.stopPropagation();
                             console.log("stopPropagation ", sub_category);
@@ -943,10 +1136,23 @@ export default {
                             } else {
                                 textData = textArea ? textArea : selectedText;
                             }
+
+                            console.log("generateToken sub generateToken::", generateToken)
+                            let auto_authToken;
+                            let model_type;
+                            if (generateToken?.authToken || generateToken?.model_type) {
+                                auto_authToken = generateToken?.authToken;
+                                model_type = generateToken?.model_type;
+                            } else {
+                                let data = await regenerate_authToken();
+                                auto_authToken = data?.authToken;
+                                model_type = data?.model_type
+                            }
+
                             let payload = {
                                 body: {
                                     "application_name": "TaskScribe",
-                                    "model_type": generateToken?.model_type,
+                                    "model_type": model_type,
                                     "usecase": sub_category?.useCase?.aiName,
                                     "question": textData,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
@@ -954,7 +1160,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": generateToken?.authToken
+                                    "X-Authtoken": auto_authToken
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -971,7 +1177,7 @@ export default {
                         }
                     }
 
-                    const ps_main_category = (item) => {
+                    const ps_main_category = async (item) => {
                         try {
                             let textData;
                             if (postOrPreOnloading?.postOnloading) {
@@ -982,10 +1188,22 @@ export default {
 
                             setPostShortcutLoading(true);
 
+                            console.log("generateToken main generateToken::", generateToken)
+                            let auto_authToken;
+                            let model_type;
+                            if (generateToken?.authToken || generateToken?.model_type) {
+                                auto_authToken = generateToken?.authToken;
+                                model_type = generateToken?.model_type;
+                            } else {
+                                let data = await regenerate_authToken();
+                                auto_authToken = data?.authToken;
+                                model_type = data?.model_type
+                            }
+
                             let payload = {
                                 body: {
                                     "application_name": "TaskScribe",
-                                    "model_type": generateToken?.model_type,
+                                    "model_type": model_type,
                                     "usecase": item?.useCase?.aiName,
                                     "question": textData,
                                     "user_id": "sangeetha.yesurajan@taskus.com",
@@ -993,7 +1211,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": generateToken?.authToken
+                                    "X-Authtoken": auto_authToken
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -1239,9 +1457,18 @@ export default {
                                     {/*<div className="ac_content">
                                         {(postpreConfig?.postpreResponse || "")} formattedResponseData
                                     </div>*/}
-                                    <div className="ac_content">
-                                        {(selection?.formattedResponseData || "")} 
-                                    </div>
+                                    {(selection?.category?.sub_category) && (selection?.category?.sub_category == "Table") ?
+                                        <div 
+                                        className="ac_content"
+                                        dangerouslySetInnerHTML={{ __html: selection?.formattedResponseData }}
+                                        >
+                                            {/*{(selection?.formattedResponseData || "")}*/}
+                                        </div> 
+                                        :
+                                        <div className="ac_content">
+                                            {(selection?.formattedResponseData || "")}
+                                        </div>
+                                    }
 
                                     {iconItems(selection, index)}
                                 </div>
@@ -1269,18 +1496,7 @@ export default {
 
                     const dashboardComponents = () => {
                         return (
-                            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                                {!(isSelecting) && initialPage()}   
-                                {/*{(selectedText != "") && selected_txt_post_blog()}*/}
-                                {/* Render list of selected texts and responses */}
-                                
-                                {selections.length > 0 && selections.map((selection, index) => (
-                                    <div key={index} ref={index === selections.length - 1 ?scrollRef:null}>
-                                        {selected_txt_post_blog(selection, index)}
-                                        {/* Place scrollRef after the last response */}
-                                        {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
-                                    </div>
-                                ))}
+                            <>
                                 {(selectedText) &&
                                     <div className={'selected_txt_post_blog'}>
                                         <div className={'st_response'}>
@@ -1292,7 +1508,48 @@ export default {
                                         </div>
                                     </div>
                                 }
-                            </div>  
+                                {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
+                                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                    {!(isSelecting) && initialPage()}   
+                                    {/*{(selectedText != "") && selected_txt_post_blog()}*/}
+                                    {/* Render list of selected texts and responses */}
+                                    
+                                    <>
+                                        {isAutoLoading ?
+                                            <>
+                                                {
+                                                    (selections.length > 0 && selections.map((selection, index) => (
+                                                        <div key={index} ref={index === selections.length - 1 ? scrollRef : null}>
+                                                            {selected_txt_post_blog(selection, index)}
+                                                            {/* Place scrollRef after the last response */}
+                                                            {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
+                                                        </div>
+                                                    )))
+                                                }
+                                                <>
+                                                    <div id="spinner_bounce" style={{ display: "block" }}>
+                                                        <div className="spinner_bounce" style={{ padding: "15px" }}>
+                                                            <div className="bounce1"></div>
+                                                            <div className="bounce2"></div>
+                                                            <div className="bounce3"></div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            </>
+                                            : <>
+                                                {selections.length > 0 && selections.map((selection, index) => (
+                                                    <div key={index} ref={index === selections.length - 1 ? scrollRef : null}>
+                                                        {selected_txt_post_blog(selection, index)}
+                                                        {/* Place scrollRef after the last response */}
+                                                        {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
+                                                    </div>
+                                                ))}
+                                            </>
+                                        }
+                                    </>                              
+                                </div> 
+                            </>
+                             
                         )
                     }
 
@@ -1379,7 +1636,7 @@ export default {
                             <div>{(!(isSettingStatus)) && loginComponent()}</div>
                             {((isLoggedStatus) && (isSettingStatus)) && <div> 
                                 {dashboardComponents()} 
-                                {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
+                                {/*{((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}*/}
                                 {(postShortcutLoading) && response_content()}   
                                 {pre_post_textarea()}
                             </div> }
