@@ -8,7 +8,7 @@ console.log("apikey => ", apikey, "authtoken ",authtoken)
 
 export default {
     app: "sample_authorai",
-    version: "0.0.70",
+    version: "0.0.73",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -73,6 +73,12 @@ export default {
             displayName: "Refresh Api",
             url: "https://orchestrator.taskus.com/api/user/refreshToken",
             cacheSeconds: 15,
+            httpMethod: "post"
+        },
+        {
+            name: "promptogpt",
+            displayName: "prompto",
+            url: "https://orchestrator.taskus.com/api/settings/get/propmt_template?app=PromptoGPT",
             httpMethod: "post"
         }
     ],

@@ -236,7 +236,7 @@ let styledData = `
         width: 40%;
         padding: 4px;
         border-radius: 4px;
-        text-align: center;
+        /*text-align: center;*/
     }
 
     .query {
@@ -256,10 +256,10 @@ let styledData = `
     .action_items {
         color: #8217FF;
         background: #F3E8FF;
-        width: 66%;
+        /*width: 66%;*/
         padding: 6px;
         border-radius: 4px;
-        text-align: center;
+        /*text-align: center;*/
     }
 
     .ac_content {
@@ -360,6 +360,21 @@ let styledData = `
             -webkit-transform: scale(1);
             transform: scale(1);
         }
+    }
+
+    .selected_pre_option {
+        display: flex;
+        /* gap: 7px; */
+        justify-content: space-between;
+        background: red;
+        padding: 8px 15px;
+        margin: 0px 10px;
+        border-radius: 8px;
+        background: #F3E8FF;
+        color: #282829;
+        font-weight: 500;
+        font-family: poppins;
+        align-items: center;
     }
 `
 let styleSection = `\`${styledData}\``;
@@ -475,7 +490,10 @@ export default {
                     const [isApiCall, setApiCall] = useState(true);
                     const [preShortcuts, setPreShortcuts] = useState({
                         preOnloading: false,
-                        preShortcutOption: ""
+                        preShortcutOption: "",
+                        dropdownOptions: {},
+                        subDropdownOptions: {},
+                        temp_json: {}
                     });
                     const [likedState, setLikedState] = useState({});
                     const [dislikedState, setDislikedState] = useState({});
@@ -484,6 +502,55 @@ export default {
                         settingResponse: {},
                         setting_token: ""
                     });
+                    const [promptoRes, setPromptoRes] = useState({
+                        promptoDropdown: {}
+                    });
+
+                    const promptoApi = async () => {
+                        try {
+                            let endpoint = '/v1/commands/' + isAppId.appId + '.app.promptogpt/run';
+                            let setting_token = "Bearer" + " " + user_setting_state?.setting_token;
+                            let prompRes = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                body: {
+                                    "headers": {
+                                        "authorization": setting_token
+                                    },
+                                    "body": {
+                                        "appName": "PromptoGPT",
+                                        "page": 1,
+                                        "take": 10,
+                                        "searchCriterias": [
+                                            {
+                                                "criteriaName": "CATEGORY",
+                                                "value": ""
+                                            }
+                                        ],
+                                        "email": "sangeetha.yesurajan@taskus.com"
+                                    }
+                                }
+                            }, (err, res) => {
+                                if (err) {
+                                    console.log("Into exhealth Error ", err)
+                                    return 'Failed to process return'
+                                } else if (response.responseBody.errors) {
+                                    return response.responseBody.errors.message;
+                                }
+                            }
+                            );
+                            if (prompRes?.data?.attributes?.responseBody) {
+                                console.log("prompRes Response ::", prompRes?.data?.attributes?.responseBody?.data[0])
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    temp_json: prompRes?.data?.attributes?.responseBody?.data[0]?.jsonValue
+                                })
+                                return prompRes?.data?.attributes?.responseBody;
+                            }
+                        } catch (err) {
+                            console.log("Error in promptoApi::", err)
+                        }
+                    }
 
                     const exhealth = async () => {
                         try {
@@ -603,7 +670,7 @@ export default {
                         }
 
                         const intervalId = setInterval(() => {
-                            healthCheckUp()
+                            // healthCheckUp()
                         }, 5000)
 
                         // Clear the interval when the component is unmounted or when isRefreshToken changes
@@ -709,6 +776,12 @@ export default {
                                 console.log(" payload payload ", response?.data?.attributes?.responseBody)
                                 setAutoLoading(false);
                                 setSelectedText('');
+                                setTextArea('');
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    preOnloading: false,
+                                    preShortcutOption: ""
+                                });
                                 let formattedResponseData;
                                 if (payload?.body?.usecase == "summarize" || payload?.body?.usecase == "fix_spelling_grammar" || payload?.body?.usecase == "helping_pronunce") {
                                     formattedResponseData = highlightHeadings(response?.data?.attributes?.responseBody?.answer);
@@ -898,7 +971,7 @@ export default {
                             // setSelecting(false);
                             setPostShortcutLoading(true);
                         }
-                        if ((selectedText == "") && (textArea == "") && (selections?.length == 0)) {
+                        if (((selectedText == "") && (textArea == "") && (selections?.length == 0) && !(preShortcuts?.preOnloading) && (preShortcuts?.preShortcutOption == ""))) {
                             setSelecting(false);
                             // setPostShortcutLoading(false);
                             // setPostShortcutLoading(true);
@@ -912,7 +985,7 @@ export default {
                         //     //     preOnloading: true
                         //     // });
                         // }
-                    }, [selectedText, textArea]);
+                    }, [selectedText, textArea, preShortcuts, selections]);
 
                     useEffect(() => {
                         if (isAppId?.appId && appSettings?.default) {
@@ -921,6 +994,20 @@ export default {
                         }
                         
                     }, [isAppId]);
+
+                    useEffect(() => {
+                        const dataPrompt = async () => {
+                            try {
+                                await promptoApi();
+                            } catch (err) {
+                                console.log("Error in dataPrompt::", err);
+                            }
+                        }
+                        if (user_setting_state?.setting_token) {
+                            dataPrompt();
+                        }
+
+                    }, [user_setting_state?.setting_token])
 
                     useEffect(() => {
                         if ((isSettingStatus) && (isApiCall)) {
@@ -932,7 +1019,7 @@ export default {
                     }, [isSettingStatus, isApiCall, isEmail]);
 
                     useEffect(() => {
-                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, user_setting_state, isAutoLoading])
+                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, isAutoLoading, preShortcuts])
 
                     async function loginBtnAPI() {
                         // setLoading(true);
@@ -1264,7 +1351,7 @@ export default {
 
                     const handleReplyTextArea = (e) => {
                         try {
-                            if (preShortcuts?.preOnloading && preShortcuts?.preShortcutOption) {
+                            if (preShortcuts?.preShortcutOption) {
                                 console.log("Into this ")
                                 setPostShortcutLoading(true);   // not to show
                             } else {
@@ -1290,34 +1377,65 @@ export default {
 
                     const pre_post_textarea = () => {
                         return (
-                            <div className={"pre_ta_parent"}>
-                                <div className={'pre_textarea'}>
-                                    <textarea
-                                        // value={replyTxt}
-                                        // readOnly={!(userLang?.trim())}
-                                        className={'textarea_input'}
-                                        placeholder={'Write/Select any text...'}
-                                        onChange={handleReplyTextArea}
-                                        onFocus={() => setPreShortcuts({
-                                            ...preShortcuts,
-                                            preOnloading: false
-                                        })}
-                                    />
-                                    <div 
-                                        className={'magic_icon'}
-                                        onClick={() => {
-                                            setPreShortcuts({
-                                                ...preShortcuts,  // Spread the current state
-                                                preOnloading: true     // Update the specific field                                     
-                                            });
-                                            setPostShortcutLoading(true); // Make it off by giving opposite
-                                            setSelectedText('')
-                                        }}
-                                    >
-                                        ${pre_magic_icon}
+                            <>
+                                {(preShortcuts?.preShortcutOption) &&
+                                    <div className={'selected_pre_option'}>
+                                        <div>{preShortcuts?.preShortcutOption && preShortcuts?.preShortcutOption?.displayName}</div>
+                                        <div 
+                                            onClick={() => {
+                                                setPreShortcuts({
+                                                    ...preShortcuts,
+                                                    preOnloading: false,
+                                                    preShortcutOption: ""
+                                                });
+                                                setTextArea('')
+                                            }}
+                                            style={{cursor: "pointer"}}
+                                        >
+                                            x
+                                        </div>
                                     </div>
-                                </div>
-                            </div>                        
+                                }
+
+                                <div className={"pre_ta_parent"}>
+                                    <div className={'pre_textarea'}>
+                                        <textarea
+                                            value={textArea}
+                                            // readOnly={!(userLang?.trim())}
+                                            className={'textarea_input'}
+                                            placeholder={'Write/Select any text...'}
+                                            onChange={handleReplyTextArea}
+                                            onFocus={() => setPreShortcuts({
+                                                ...preShortcuts,
+                                                preOnloading: false
+                                            })}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();  // Prevents new line in the textarea
+                                                    enteredTextAreas();  // Call the function
+                                                }
+                                            }}
+                                        />
+                                        {preShortcuts?.preShortcutOption == "" &&
+                                        <div 
+                                            className={'magic_icon'}
+                                            onClick={() => {
+                                                setPreShortcuts({
+                                                    ...preShortcuts,  // Spread the current state
+                                                    // preOnloading: true     // Update the specific field    
+                                                    preOnloading: !(preShortcuts?.preOnloading)                                 
+                                                });
+                                                setPostShortcutLoading(true); // Make it off by giving opposite
+                                                setSelectedText('');
+                                                setSelecting(true)
+                                            }}
+                                        >
+                                            ${pre_magic_icon}
+                                        </div>}
+                                    </div>
+                                </div>   
+                            </>
+                                                 
                         )
                     }
 
@@ -1405,12 +1523,70 @@ export default {
                         )
                     }
 
+                    const enteredTextAreas = async () => {
+                        try {
+                            console.log("enteredTextAreas preShortcuts", preShortcuts);
+                            let auto_authToken;
+                            let model_type;
+                            if (generateToken?.authToken || generateToken?.model_type) {
+                                auto_authToken = generateToken?.authToken;
+                                model_type = generateToken?.model_type;
+                            } else {
+                                let data = await regenerate_authToken();
+                                auto_authToken = data?.authToken;
+                                model_type = data?.model_type
+                            }
+                            console.log("enteredTextAreas ", auto_authToken, model_type)
+                            let payload = {
+                                body: {
+                                    "application_name": "TaskScribe",
+                                    "model_type": model_type,
+                                    "usecase": preShortcuts?.preShortcutOption?.useCase?.aiName,
+                                    "question": textArea,
+                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    // "enable_automasking": true
+                                },
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-Authtoken": auto_authToken
+                                },
+                                category: {
+                                    main_category: preShortcuts?.preShortcutOption?.displayName,
+                                    sub_category: ""
+                                }
+
+                            }
+                            if (preShortcuts?.preShortcutOption?.name) {
+                                payload.body['usecase_options'] = preShortcuts?.preShortcutOption?.name
+                            }
+                            console.log("PAYLOAD PAYLOAD ::", payload);
+                            autoSuggestApi(payload, isAppId)
+                        } catch (err) {
+                            console.log("Error in enteredTextAreas::", err);
+                        }
+                    }
+
+                    const selectedPreShortcut = async (pre_object) => {
+                        try {
+                            setSelecting(true);
+                            setPostShortcutLoading(true);
+                            setPreShortcuts({
+                                ...preShortcuts,
+                                preOnloading: false,
+                                preShortcutOption: pre_object
+                            });
+
+                        } catch (err) {
+                            console.log("Error in selectedPreShortcut:: ", err);
+                        }
+                    }
+
                     const pre_shortcut_content = () => {
                         return (
                             <div className={'pre_shortcut_list'}>
                                 {(postpreConfig?.preShortcuts || []).map((preshortcut) => {
                                     return (
-                                        <div className={'pr_single_item'}>
+                                        <div className={'pr_single_item'} onClick={() => selectedPreShortcut(preshortcut)}>
                                             {(preshortcut?.name == "TEMPLATE_MENU") ?
                                                 <div style={{margin: "2px 0px 0px"}}>
                                                     ${templates_icon}
@@ -1497,20 +1673,9 @@ export default {
                     const dashboardComponents = () => {
                         return (
                             <>
-                                {(selectedText) &&
-                                    <div className={'selected_txt_post_blog'}>
-                                        <div className={'st_response'}>
-                                            <div className={'select_text_heading'}>Selected Text</div>
-                                            {/* <div className={'query'}>{selectedText}</div> */}
-
-                                            <div className={'query'}>{selectedText}</div>
-
-                                        </div>
-                                    </div>
-                                }
-                                {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
+                                {!(isSelecting) && initialPage()}                                
                                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                                    {!(isSelecting) && initialPage()}   
+                                    {/*{!(isSelecting) && initialPage()}*/}   
                                     {/*{(selectedText != "") && selected_txt_post_blog()}*/}
                                     {/* Render list of selected texts and responses */}
                                     
@@ -1548,6 +1713,18 @@ export default {
                                         }
                                     </>                              
                                 </div> 
+                                {(selectedText) &&
+                                    <div className={'selected_txt_post_blog'}>
+                                        <div className={'st_response'}>
+                                            <div className={'select_text_heading'}>Selected Text</div>
+                                            {/* <div className={'query'}>{selectedText}</div> */}
+
+                                            <div className={'query'}>{selectedText}</div>
+
+                                        </div>
+                                    </div>
+                                }
+                                {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
                             </>
                              
                         )
