@@ -455,7 +455,69 @@ export default {
                 } catch (err) {
                     console.log("Error in generateTokenApi::", err);
                 }
-            }                   
+            }   
+                
+            const createPayload = (module, action) => {
+                return [
+                    {
+                        module: module,
+                        event: action,
+                    },
+                ];
+            };
+
+            async function logsAPI({ isAuthuu, setting_token, user_setting, PAYLOAD_FOR_EVENT, UUID = null, log_message = null }) {
+                let app_version = "1.0.0"
+                try {
+                    let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.logs_api/run'
+                    let auth = 'Bearer' + " " + setting_token
+                    await KustomerRequest({
+                        url: endpoint,
+                        method: 'POST',
+                        body: {
+                            "headers": {
+                                "Authorization": auth,
+                                "Content-Type": "application/json"
+                            },
+                            "body": {
+                                "user_email": user_setting.email,
+                                "applicationName": "PromptoGPT",
+                                "event_list": PAYLOAD_FOR_EVENT,
+                                "user_id": user_setting.user_id,
+                                "app_id": user_setting.app_id,
+                                "app_name": "PromptoGPT",
+                                "campaign_name": user_setting.campaign_name,
+                                "campaign_id": user_setting.campaign_id,
+                                "lob_id": user_setting.lob_id,
+                                "lob_name": user_setting.lob_name,
+                                "currentUserAppVersion": app_version,
+                                "uuid": UUID,
+                                "log_message": log_message
+                            }
+                        }
+                    },
+                        (err, response) => {
+                            if (err) {
+                                console.log("Into 1")
+                                return 'Failed to process return'
+                            } else if (response.responseBody.errors) {
+                                console.log("Into 2")
+                                return response.responseBody.errors.message;
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.log("Error in logsAPI::", error);
+                }
+            }
+
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    const r = (Math.random() * 16) | 0;
+                    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                    return v.toString(16);
+                });
+            }
 
             const AuthorAIComponent = window.__authorAIComponent12345 || (window.__authorAIComponent12345 = 
                 function AuthorAIComponent(props) {
@@ -731,15 +793,16 @@ export default {
                     };
 
                     //api's
-                    // async function autoSuggestApi(user_email, latestmsgfromuser, model_type, use_case, auth_token, isAuthuu, user_setting_infos) {
                     async function autoSuggestApi(payload, isAuthuu) {    
                         setAutoLoading(true);
-                        // let unique_uuid = generateUUID();
-                        // const payload = createPayload(
-                        //     'Kustomer_PromptoGPT_Request_Query_Started',
-                        //     'Success'
-                        // );
-                        // await logsAPI({isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
+                        let unique_uuid = generateUUID();
+                        const log_payload = createPayload(
+                            'Kustomer_AuthorAI_Request_Query_Started',
+                            'Success'
+                        );
+                        let query_msg = "Query - " + payload.body?.question;
+                        await logsAPI({ isAuthuu: isAuthuu, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: query_msg });
+                
                         try {
                             let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.auto_suggest_api/run';
                             let response = await KustomerRequest({
@@ -761,18 +824,13 @@ export default {
                                 }
                             );
                             if (response?.data?.attributes?.responseBody) {
-                                // let unique_uuid = generateUUID();
-                                // const payload = createPayload(
-                                //     'Kustomer_PromptoGPT_Request_Query_Completed',
-                                //     'Success'
-                                // );
-                                // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
-                                // const payload_query = createPayload(
-                                //     'Kustomer_PromptoGPT_Request_Query',
-                                //     'Success'
-                                // );
-                                // let unique_uuid_query = generateUUID();
-                                // await logsAPI({ isAuthuu: isAuthuu, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
+                                let unique_uuid_complete = generateUUID();
+                                const log_payload_completed = createPayload(
+                                    'Kustomer_AuthorAI_Request_Query_Response_Generate_Completed',
+                                    'Success'
+                                );
+                                let res_msg = "Received the API response - " + response?.data?.attributes?.responseBody?.answer;
+                                await logsAPI({ isAuthuu: isAuthuu, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload_completed, UUID: unique_uuid_complete, log_message: res_msg });
                                 console.log(" payload payload ", response?.data?.attributes?.responseBody)
                                 setAutoLoading(false);
                                 setSelectedText('');
@@ -913,6 +971,13 @@ export default {
                                             setSelectedText(selectedText);
                                             setSelecting(true);
                                             setPostShortcutLoading(false);
+                                            const logMsg = "Selected content - " + selectedText;
+                                            const log_payload = createPayload(
+                                                'Kustomer_AuthorAI_selected_content',
+                                                'Success'
+                                            );
+                                            logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, log_message: logMsg });
+
                                             console.log('Double click - text selected:', selectedText);
                                         } 
                                         else {
@@ -942,6 +1007,13 @@ export default {
                                         preOnloading: false
                                     });
                                     setPostShortcutLoading(false);
+                                    const logMsg = "Selected content - " + selectedText;
+                                    const log_payload = createPayload(
+                                        'Kustomer_AuthorAI_selected_content',
+                                        'Success'
+                                    );
+                                    logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, log_message: logMsg });
+
                                     console.log('Mouse selection - text selected:', selectedText);
                                 } else {
                                     // setSelecting(false);
@@ -964,7 +1036,7 @@ export default {
                             setSelectedText('')
                         }
 
-                    }, [isLoggedStatus, isSettingStatus, selectedText]);
+                    }, [isLoggedStatus, isSettingStatus, selectedText, user_setting_state]);
 
                     useEffect(() => {
                         if ((selectedText == "") && (textArea == "")) {
@@ -1102,12 +1174,14 @@ export default {
                                 setSettingStatus(true);
                                 setSettingreg(settingRes);
                                 setLoading(false);
-                                const logMsg = "Successfully LoggedIn";
-                                // const payload = createPayload(
-                                // 'Kustomer_LoggedIn',
-                                // 'Success'
-                                // );
-                                // await logsAPI({ isAuthuu: isAppId, user_setting: settingRes, PAYLOAD_FOR_EVENT: payload, log_message: logMsg });                                
+
+                                const logMsg = "Successfully LoggedIn in Kustomer_AuthorAI";
+                                const log_payload = createPayload(
+                                'Kustomer_AuthorAI_LoggedIn',
+                                'Success'
+                                );
+                                await logsAPI({ isAuthuu: isAppId, setting_token: settingRes?.authToken, user_setting: settingRes, PAYLOAD_FOR_EVENT: log_payload, log_message: logMsg });
+                        
                                 globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);  
                                 const { authToken, clientAuthToken, model_type, usecase } = await generateTokenApi(settingRes, isEmail, isAppId);
                                 setGenerateToken(
@@ -1258,6 +1332,14 @@ export default {
                                 payload.body['usecase_options'] = sub_category?.useCaseOption?.aiName
                             }
                             console.log("PAYLOAD PAYLOAD ::", payload);
+                            let unique_uuid = generateUUID();
+                            const log_payload = createPayload(
+                                'Kustomer_AuthorAI_Post_Category_Clicked',
+                                'Success'
+                            );
+                            let post_categoty_msg = "Clicked the prompt option - " + " " + sub_category?.displayName;
+                            await logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: post_categoty_msg });
+                    
                             autoSuggestApi(payload, isAppId)
                         } catch (err) {
                             console.log("Error in post_sub_category_items::", err);
@@ -1310,6 +1392,14 @@ export default {
                                 payload.body['usecase_options'] = item?.useCaseOption?.aiName
                             }
                             console.log("PAYLOAD PAYLOAD ::", payload);
+                            let unique_uuid = generateUUID();
+                            const log_payload = createPayload(
+                                'Kustomer_AuthorAI_Post_Category_Clicked',
+                                'Success'
+                            );
+                            let post_categoty_msg = "Clicked the prompt option - " + " " + item?.displayName;
+                            await logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: post_categoty_msg });
+                    
                             autoSuggestApi(payload, isAppId)
                         } catch (err) {
                             console.log("Error in ps_main_category::", err);
@@ -1321,19 +1411,22 @@ export default {
                             <div className="post_shortcut_list">
                                 {(postpreConfig?.postShortcuts || []).map((item) => {
                                     return (
-                                        <div className={'ps_single_item'}>
-                                            <div 
+                                        <div 
+                                        className={'ps_single_item'}
+                                        onClick={() => (item?.subUseCases.length == 0) && ps_main_category(item)}
+                                        >
+                                            <div
                                                 className={'ps_main_list_names'}
                                                 // onMouseDown={() => setPostShortcutLoading(true)}
-                                                onClick={() => (item?.subUseCases.length == 0) ? ps_main_category(item) : ""}
+                                                
                                             >
                                                 {item.displayName}
                                             </div>
                                             <div className={'post_shortcut_subcategory'}>
                                                 {(item.subUseCases || []).map((sub, index) => {
                                                     return (
-                                                        <div 
-                                                            className={sub?.name?'ps_subcategory_item':''}
+                                                        <div
+                                                            className={sub?.name ? 'ps_subcategory_item' : ''}
                                                             // onMouseDown={(e) => post_sub_category_items(e, sub)}
                                                             onClick={(e) => post_sub_category_items(e, item, sub, index)}
                                                         >
@@ -1457,7 +1550,7 @@ export default {
                         }
                     }
 
-                    const reloadFunc = (selectionData, index) => {
+                    const reloadFunc = async (selectionData, index) => {
                         try {
                             console.log("reloadFunc ::", selectionData, index);
                             setPostShortcutLoading(true);
@@ -1485,6 +1578,13 @@ export default {
                                 payload.body['usecase_options'] = selectionData?.res_useCase_option?.useCaseOption
                             }
                             console.log("Reload Function PAYLOAD ::", payload);
+                            let unique_uuid = generateUUID();
+                            const log_payload = createPayload(
+                                'Kustomer_AuthorAI_Reload_Option_Clicked',
+                                'Success'
+                            );
+                            let post_categoty_msg = "Reload Query - " + " " + selectionData?.showText;
+                            await logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: post_categoty_msg });
                             autoSuggestApi(payload, isAppId)
 
                         } catch (err) {
@@ -1575,6 +1675,14 @@ export default {
                                 preOnloading: false,
                                 preShortcutOption: pre_object
                             });
+
+                            let unique_uuid = generateUUID();
+                            const log_payload = createPayload(
+                                'Kustomer_AuthorAI_PreShortcut_Option_Clicked',
+                                'Success'
+                            );
+                            let pre_categoty_msg = "Clicked the prompt option - " + " " + pre_object?.displayName;
+                            await logsAPI({ isAuthuu: isAppId, setting_token: user_setting_state?.setting_token, user_setting: user_setting_state?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: pre_categoty_msg });
 
                         } catch (err) {
                             console.log("Error in selectedPreShortcut:: ", err);
