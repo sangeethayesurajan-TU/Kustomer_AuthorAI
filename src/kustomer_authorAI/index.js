@@ -8,7 +8,7 @@ console.log("apikey => ", aapikey, "authtoken ",aauthtoken)
 
 export default {
     app: "sample_authorai",
-    version: "0.0.85",
+    version: "0.0.87",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {

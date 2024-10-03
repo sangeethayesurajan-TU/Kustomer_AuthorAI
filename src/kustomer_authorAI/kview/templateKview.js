@@ -144,7 +144,7 @@ let styledData = `
         padding: 8px 16px 8px 16px;
         border-radius: 56px;
         text-align: center;
-        margin: 0px 25px;
+        margin: 10px 25px 5px;
         font-family: poppins;
         font-weight: 500;
     }
@@ -392,6 +392,21 @@ let styledData = `
         animation: fadeOut 2s forwards;
     }
 
+    .selected_pre_option {
+        display: flex;
+        /* gap: 7px; */
+        justify-content: space-between;
+        background: red;
+        padding: 8px 15px;
+        margin: 0px 10px;
+        border-radius: 8px;
+        background: #F3E8FF;
+        color: #282829;
+        font-weight: 500;
+        font-family: poppins;
+        align-items: center;
+    }
+
     .spinner_bounce > div {
         width: 10px;
         height: 10px;
@@ -434,6 +449,59 @@ let styledData = `
             -webkit-transform: scale(1);
             transform: scale(1);
         }
+    }
+
+    .latest_AI_types {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+        align-items: center;
+        font-family: "poppins";
+        font-size: 16px;
+        gap: 10px;
+    }
+
+    .new_non_selected_prompts {
+        border: 1px solid #CCCCCC;
+        border-radius: 30px;
+        background: #F9FAFB;
+        width: 106px;
+        height: 32px;
+        text-align: center;
+        padding: 6px 12px;
+        color: #282829;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .new_non_selected_prompts:hover {
+        border: 1px solid #8217FF;
+        border-radius: 30px;
+        background: #F3E8FF;
+        width: 106px;
+        height: 32px;
+        text-align: center;
+        padding: 6px 12px;
+        color: #282829;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .new_selected_prompts {
+        border: 1px solid #8217FF;
+        border-radius: 30px;
+        background: #F3E8FF;
+        width: 106px;
+        height: 32px;
+        text-align: center;
+        padding: 6px 12px;
+        color: #282829;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .notAllowed {
+        cursor: not-allowed;
     }
 
 `
@@ -667,7 +735,7 @@ export default {
                         await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: query_msg });
 
                         try {
-                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.auto_suggest_api/run';
+                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.auto_suggest_api_data/run';
                             let response = await KustomerRequest({
                                 url: endpoint,
                                 method: "POST",
@@ -1031,7 +1099,7 @@ export default {
                             setSelecting(true);
                             setPostShortcutLoading(true);
                             setTextArea('');
-                            setPostpreConfig({});
+                            // setPostpreConfig({});
                             setPreShortcuts({
                                 ...preShortcuts,
                                 preOnloading: false,
@@ -1888,8 +1956,9 @@ export default {
                                             postOnloading: true,     // Update the specific field
                                             textData: selectionData?.showText
                                         }); 
-                                        setPostShortcutLoading(false)}
-                                    }
+                                        setPostShortcutLoading(!(postShortcutLoading))
+                                        // setPostShortcutLoading(false)}
+                                    }}
                                 >
                                     ${magic_icon}
                                 </div>
@@ -1901,7 +1970,7 @@ export default {
                         return (
                             <>
                                 {!(isSelecting) && initialPage()}                                
-                                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                <div style={{ maxHeight: '310px', overflowY: 'auto' }}>
                                     {/*{!(isSelecting) && initialPage()}*/}   
                                     {/*{(selectedText != "") && selected_txt_post_blog()}*/}
                                     {/* Render list of selected texts and responses */}
@@ -1957,107 +2026,80 @@ export default {
                         )
                     }
 
-                    function checkboxContent() {
+                    const selectingAI = async (type) => {
                         try {
-                            return (            
-                                <div style={
-                                    { 
-                                    display: "flex", 
-                                    gap: "15px", 
-                                    alignItems: "center",
-                                    border: "1px solid #808080",
-                                    borderRadius: "8px",
-                                    padding: "5px 10px"
-                                    }
-                                }>
+                            console.log("TYPE TYPE ::", type);
+                            setCheckboxType(type)
+                            if (type === 'promptogpt') {
+                                const payload = createPayload(
+                                    'Kustomer_PromptoGPT_ON',
+                                    'Success'
+                                );
+                                const promptogpt_on_LogMsg = "PromptoGPT Turned ON";
+                                if (settingreg) {
+                                    await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: payload, log_message: promptogpt_on_LogMsg });
+                                }
+
+                            } else if (type == "knowledge_assist") {
+                                const payload = createPayload(
+                                    'Kustomer_KnowledgeAssist_ON',
+                                    'Success'
+                                );
+                                const knowledgeAssist_on_LogMsg = "KnowledgeAssist Turned ON";
+                                if (settingreg) {
+                                    await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: payload, log_message: knowledgeAssist_on_LogMsg });
+                                }
+                            } else {
+                                const payload = createPayload(
+                                    'Kustomer_AuthorAI_ON',
+                                    'Success'
+                                );
+                                const knowledgeAssist_on_LogMsg = "Kustomer_AuthorAI Turned ON";
+                                if (settingreg) {
+                                    await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: payload, log_message: knowledgeAssist_on_LogMsg });
+                                }
+                            }
+                        } catch (err) {
+                            console.log("Error in selectingAI::", err)
+                        }
+                    }
+
+                    const middlePart = () => {
+                        console.log("((lastUserRes === 'Agent') || (channelType === 'email'))", ((lastUserRes === 'Agent') || (channelType === "email")))
+                        return (
+                            <div className="latest_AI_types">
                                 {(generateToken?.promptoGPT_toggle === "true") &&
-                                    <div style={{ ...divStyle }}>
-                                        <input
-                                        type="radio"
-                                        id="promptogpt"
-                                        name="preference_type"
-                                        value={"promptogpt"}
-                                        onClick={(e) => selectedCheckbox(e?.target?.value)}
-                                        disabled={((lastUserRes === 'Agent') || (channelType === "email"))?true:false}
-                                        className={(lastUserRes === 'Agent')?'cursor':''}
-                                        />
-                                        <label for="promptogpt">
-                                        <span
-                                            // className={gradient_text}
-                                            style={{
-                                            // color: 'transparent',
-                                            // background: "linear-gradient(to left, rgb(220, 7, 213), rgb(6, 6, 192), rgb(161, 161, 5), rgb(153, 8, 220))",
-                                            // WebkitBackgroundClip: "text",
-                                            color: '#000000',
-                                            fontWeight: "600",
-                                            fontSize: "16px",
-                                            fontFamily: "poppins"
-                                            }}
+                                    (((lastUserRes === 'Agent') || (channelType === "email")) ?
+                                        <div
+                                            className={"new_non_selected_prompts_notAllowed notAllowed"}
+                                        // onClick={() => ((lastUserRes === 'Agent') || (channelType === "email")) ? console.log() : selectingAI("promptogpt")}
                                         >
                                             Prompt<sup>AI</sup>
-                                        </span>
-                                        </label>
-                                    </div>
-                                    }
-                                    {(generateToken?.knowledgeAssist_toggle === "true") &&
-                                        <div style={divStyle}>
-                                            <input
-                                            type="radio"
-                                            id="knowledge_assist"
-                                            name="preference_type"
-                                            value={"knowledge_assist"}
-                                            onClick={(e) => selectedCheckbox(e?.target?.value)}
-                                            />
-                                            <label for="knowledge_assist">
-                                            <span
-                                                // className={gradient_text}
-                                                style={{
-                                                // color: 'transparent',
-                                                // background: "linear-gradient(to left, rgb(220, 7, 213), rgb(6, 6, 192), rgb(161, 161, 5), rgb(153, 8, 220))",
-                                                // WebkitBackgroundClip: "text",
-                                                color: '#000000',
-                                                fontWeight: "600",
-                                                fontSize: "16px",
-                                                fontFamily: "poppins"
-                                                }}
-                                            >
-                                                Assist<sup>AI</sup>
-                                            </span>
-                                            </label>
+                                        </div> :
+                                        <div
+                                            className={ischeckboxType == "promptogpt" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                            onClick={() => selectingAI("promptogpt")}
+                                        >
+                                            Prompt<sup>AI</sup>
                                         </div>
-                                    }
-                                    {(generateToken?.authorAI_toggle === "true") &&
-                                        <div style={divStyle}>
-                                            <input
-                                            type="radio"
-                                            id="authorAI"
-                                            name="preference_type"
-                                            value={"authorAI"}
-                                            onClick={(e) => selectedCheckbox(e?.target?.value)}
-                                            />
-                                            <label for="authorAI">
-                                            <span
-                                                // className={gradient_text}
-                                                style={{
-                                                // color: 'transparent',
-                                                // background: "linear-gradient(to left, rgb(220, 7, 213), rgb(6, 6, 192), rgb(161, 161, 5), rgb(153, 8, 220))",
-                                                // WebkitBackgroundClip: "text",
-                                                color: '#000000',
-                                                fontWeight: "600",
-                                                fontSize: "16px",
-                                                fontFamily: "poppins"
-                                                }}
-                                            >
-                                                Author<sup>AI</sup>
-                                            </span>
-                                            </label>
-                                        </div>
-                                    }
-                                </div>           
-                            )
-                        } catch (err) {
-                            console.log("Error in checkboxContent::", err);
-                        }
+                                    )
+                                }
+                                {(generateToken?.knowledgeAssist_toggle === "true") &&
+                                    <div
+                                        className={ischeckboxType == "knowledge_assist" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                        onClick={() => selectingAI("knowledge_assist")}
+                                    >
+                                        Assist<sup>AI</sup>
+                                    </div>}
+                                {(generateToken?.authorAI_toggle === "true") &&
+                                    <div
+                                        className={ischeckboxType == "authorAI" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                        onClick={() => selectingAI("authorAI")}
+                                    >
+                                        Author<sup>AI</sup>
+                                    </div>}
+                            </div>
+                        )
                     }
 
                     const dashboardComponent = () => {
@@ -2097,7 +2139,8 @@ export default {
                                     </div>
                                 </div>
                             
-                                {checkboxContent()}
+                                {/*checkboxContent()*/}
+                                {middlePart()}
                                 <>
                                     {(ischeckboxType == 'promptogpt') ?
                                     <>
@@ -2212,30 +2255,37 @@ export default {
                     }
 
                     const footerPart = () => {
-                    const currentYear = new Date().getFullYear();
-                    return (
-                        <div style={{
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        fontFamily: "poppins",
-                        margin: "10px 0px",
-                        textAlign: "center",
-                        color: "#000000"
-                        }}
-                        >
-                        <p>Version: 1.0.0 | TaskUs @ {currentYear} | <a style={{color: "#005EFF", textDecoration: "underline"}} href="https://www.taskus.com/security/" target="_blank">Security</a></p>
-                        </div>
-                    )
+                        const currentYear = new Date().getFullYear();
+                        return (
+                            <div style={{
+                            fontSize: "14px",
+                            fontWeight: "500",
+                            fontFamily: "poppins",
+                            margin: "10px 0px",
+                            textAlign: "center",
+                            color: "#000000"
+                            }}
+                            >
+                            <p>Version: 1.0.0 | TaskUs @ {currentYear} | <a style={{color: "#005EFF", textDecoration: "underline"}} href="https://www.taskus.com/security/" target="_blank">Security</a></p>
+                            </div>
+                        )
                     }
 
                     return (
-                    // <div style={{padding: "10px"}}>
-                    <div style={{padding: "5px"}}>
-                        {(!(isSettingStatus)) && loginComponent()}
-                        {((isLoggedStatus) && (isSettingStatus)) && dashboardComponent()}
-                        {footerPart()}
-                        <style>{${styleSection}}</style>
-                    </div>
+                        // <div style={{padding: "10px"}}>
+                        <div style={{padding: "5px"}}>
+                            {(!(isSettingStatus)) && loginComponent()}
+                            {((isLoggedStatus) && (isSettingStatus)) && dashboardComponent()}
+                            {((isLoggedStatus) && (isSettingStatus) && (ischeckboxType == "authorAI")) && 
+                                <>
+                                    {authorAIDashboardComponents()}
+                                    {pre_post_textarea()}
+                                </>
+                            
+                            }
+                            {footerPart()}
+                            <style>{${styleSection}}</style>
+                        </div>
                     )
                 });
                 <AuthorAIComponent 
