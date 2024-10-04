@@ -504,6 +504,28 @@ let styledData = `
         cursor: not-allowed;
     }
 
+    .promptoWritingStyleOptions {
+        display: flex;
+        justify-content: space-between;
+        width: 300px;
+        margin: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: poppins;
+    }
+
+    .tone_style_content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tone_lists {
+        width: 140px;
+        height: 34px;
+        border-radius: 4px;
+    }
+
 `
 let styleSection = `\`${styledData}\``;
 
@@ -665,8 +687,10 @@ export default {
                         settingResponse: {},
                         setting_token: ""
                     });
-                    const [promptoRes, setPromptoRes] = useState({
-                        promptoDropdown: {}
+                    const [promptoRes, setPromptoRes] = useState({});
+                    const [toneWriting, setToneWriting] = useState({
+                        selected_tone: "soft", // Default value for tone
+                        selected_writing_style: "professional"
                     });
 
                     console.log("Template Kview Main Data ::", selectedText);
@@ -680,7 +704,7 @@ export default {
                     }
 
                     // Handle like click
-                    const handleLikeClick = (index) => {
+                    const handleLikeClick = async (index, selectionDataItem) => {
                         setLikedState(prevState => ({
                             ...prevState,
                             [index]: !prevState[index] // Toggle like state for the specific item
@@ -690,10 +714,18 @@ export default {
                             ...prevState,
                             [index]: false // Ensure the corresponding dislike is reset for the same item
                         }));
-                    };
+
+                        let unique_uuid = generateUUID();
+                        const log_payload = createPayload(
+                            'Kustomer_AuthorAI_clicked_star_rating',
+                            'Success'
+                        );
+                        let thumbs_up_msg = "Rating: Thumbs up\nAPI response: " + " " + selectionDataItem?.originalData;
+                        await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: thumbs_up_msg });
+                    }
 
                     // Handle dislike click
-                    const handleDislikeClick = (index) => {
+                    const handleDislikeClick = async (index, selectionDataItem) => {
                         setDislikedState(prevState => ({
                             ...prevState,
                             [index]: !prevState[index] // Toggle dislike state for the specific item
@@ -703,6 +735,14 @@ export default {
                             ...prevState,
                             [index]: false // Ensure the corresponding like is reset for the same item
                         }));
+
+                        let unique_uuid = generateUUID();
+                        const log_payload = createPayload(
+                            'Kustomer_AuthorAI_clicked_star_rating',
+                            'Success'
+                        );
+                        let thumbs_down_msg = "Rating: Thumbs down\nAPI response: " + " " + selectionDataItem?.originalData;
+                        await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: thumbs_down_msg });
                     };
 
                     const highlightHeadings = (text) => {
@@ -778,11 +818,15 @@ export default {
                                     formattedResponseData = response?.data?.attributes?.responseBody?.answer;
                                 }
                                 console.log("formattedResponse formattedResponse ", formattedResponseData)
-                                let useCaseOption = findUseCaseOption(response?.data?.attributes?.responseBody);
+                                // let useCaseOption = findUseCaseOption(response?.data?.attributes?.responseBody);
                                 setPostpreConfig({
                                     ...postpreConfig,
                                     // postpreResponse: responseData
                                     postpreResponse: formattedResponseData
+                                });
+                                setToneWriting({
+                                    selected_tone: "soft", // Default value for tone
+                                    selected_writing_style: "professional"
                                 });
                                 setPostOrPreOnloading({ ...postOrPreOnloading, textData: payload.body?.question })
                                 let originalData = response?.data?.attributes?.responseBody?.answer;
@@ -928,6 +972,26 @@ export default {
                         if (generateToken) {
                         }       
                     }, [generateToken]);  
+
+                    useEffect(() => {
+                        const dataPrompt = async () => {
+                            try {
+                                let promptResponse = await promptoApi();
+                                setPromptoRes({
+                                    promptToneOptions: promptResponse?.data[0]?.jsonValue?.tone,
+                                    promptoWritingStyleOptions: promptResponse?.data[0]?.jsonValue?.writing_style,
+                                    shownforTemplate: promptResponse?.data[0]?.jsonValue?.body
+                                })
+                                console.log("promptResponse promptResponse ", promptResponse, promptResponse?.data[0]?.jsonValue)
+                            } catch (err) {
+                                console.log("Error in dataPrompt::", err);
+                            }
+                        }
+                        if (settingreg?.setting_token) {
+                            dataPrompt();
+                        }
+
+                    }, [settingreg?.setting_token])
 
                     useEffect(() => {
 
@@ -1109,7 +1173,9 @@ export default {
                     }, [ischeckboxType])
 
                     useEffect(() => {
-                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, isAutoLoading, preShortcuts]);
+                    }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, isAutoLoading, preShortcuts, promptoRes, toneWriting]);
+
+                    console.log("promptoRes data :: ", promptoRes)
 
                     async function findLastResponse(result) {
                         try {
@@ -1522,7 +1588,7 @@ export default {
                                     "model_type": model_type,
                                     "usecase": sub_category?.useCase?.aiName,
                                     "question": textData,
-                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    "user_id": isEmail,
                                     //"enable_automasking": true
                                 },
                                 headers: {
@@ -1581,7 +1647,7 @@ export default {
                                     "model_type": model_type,
                                     "usecase": item?.useCase?.aiName,
                                     "question": textData,
-                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    "user_id": isEmail,
                                     // "enable_automasking": true
                                 },
                                 headers: {
@@ -1694,7 +1760,7 @@ export default {
                                     "model_type": model_type,
                                     "usecase": preShortcuts?.preShortcutOption?.useCase?.aiName,
                                     "question": textArea,
-                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    "user_id": isEmail,
                                     // "enable_automasking": true
                                 },
                                 headers: {
@@ -1707,8 +1773,14 @@ export default {
                                 }
 
                             }
-                            if (preShortcuts?.preShortcutOption?.name) {
+                            if (preShortcuts?.preShortcutOption?.name != "TEMPLATE_MENU") {
                                 payload.body['usecase_options'] = preShortcuts?.preShortcutOption?.name
+                            } else {
+                                payload.body['usecase_options'] = {
+                                    name: "email",
+                                    voice_tone: toneWriting?.selected_tone,
+                                    writing_style: toneWriting?.selected_writing_style
+                                }
                             }
                             console.log("PAYLOAD PAYLOAD ::", payload);
                             postPreAutoSuggestApi(payload, isAuthuu)
@@ -1735,6 +1807,47 @@ export default {
                                             style={{ cursor: "pointer" }}
                                         >
                                             x
+                                        </div>
+                                    </div>
+                                }
+
+                                {preShortcuts?.preShortcutOption?.name == "TEMPLATE_MENU" &&
+                                    <div className="promptoWritingStyleOptions">
+                                        <div className="tone_style_content">
+                                            <div>Tone</div>
+                                            <select 
+                                                value={toneWriting.selected_tone}
+                                                className="tone_lists"
+                                                onChange={(e) => setToneWriting({
+                                                    ...toneWriting,
+                                                    selected_tone: e.target.value
+                                                })}
+                                            >
+                                                {((promptoRes?.promptToneOptions) || []).map((item) => {
+                                                    return (
+                                                        <option className='tone_item' value={item}>{item}</option>
+                                                    )
+                                                })}
+                                            </select>
+
+                                        </div>
+                                        <div className="tone_style_content">
+                                            <div>Tone</div>
+                                            <select
+                                                value={toneWriting.selected_writing_style}
+                                                className="tone_lists"
+                                                onChange={(e) => setToneWriting({
+                                                    ...toneWriting,
+                                                    selected_writing_style: e.target.value
+                                                })}
+                                            >
+                                                {((promptoRes?.promptoWritingStyleOptions) || []).map((item) => {
+                                                    return (
+                                                        <option className='tone_item' value={item}>{item}</option>
+                                                    )
+                                                })}
+                                            </select>
+
                                         </div>
                                     </div>
                                 }
@@ -1785,11 +1898,20 @@ export default {
                         try {
                             setSelecting(true);
                             setPostShortcutLoading(true);
-                            setPreShortcuts({
-                                ...preShortcuts,
-                                preOnloading: false,
-                                preShortcutOption: pre_object
-                            });
+                            if (pre_object?.displayName == "Templates") {
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    preOnloading: false,
+                                    preShortcutOption: { displayName: promptoRes?.shownforTemplate, name: pre_object?.name, useCase: { aiName: pre_object?.useCase?.aiName } }
+                                });
+                            } else {
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    preOnloading: false,
+                                    preShortcutOption: pre_object
+                                });
+                            }
+                            
 
                             let unique_uuid = generateUUID();
                             const log_payload = createPayload(
@@ -1850,7 +1972,7 @@ export default {
                                     </div>                            
                                 </div>
                                 <div className={'overall_icon_pack'}>
-                                    <div className="action_items">{selection?.category?.main_category}/{selection?.category?.sub_category}</div>
+                                    <div className="action_items">{selection?.category?.main_category}{selection?.category?.sub_category && ("/"+""+selection?.category?.sub_category)}</div>
 
                                     {/* Render formatted content without dangerouslySetInnerHTML */}
                                     {/*<div className="ac_content">
@@ -1903,7 +2025,7 @@ export default {
                                     "model_type": generateToken?.model_type,
                                     "usecase": selectionData?.res_useCase_option?.usecase,
                                     "question": selectionData?.showText,
-                                    "user_id": "sangeetha.yesurajan@taskus.com",
+                                    "user_id": isEmail,
                                     // "enable_automasking": true
                                 },
                                 headers: {
@@ -1944,10 +2066,10 @@ export default {
                                     {(copied === index) && <span className={'copied-message-ai'}>Copied!</span>}
                                     ${copy_icon}
                                 </div>
-                                <div onClick={() => handleLikeClick(index)}>
+                                <div onClick={() => handleLikeClick(index, selectionData)}>
                                     {(likedState[index]) ? ${liked_thumbs_up} : ${thumbs_up_icon}}                                    
                                 </div>
-                                <div onClick = {() => handleDislikeClick(index)}>
+                                <div onClick = {() => handleDislikeClick(index, selectionData)}>
                                     {(dislikedState[index]) ? ${disliked_thumbs_down} : ${thumbs_down_icon}}
                                 </div>
                                 <div
