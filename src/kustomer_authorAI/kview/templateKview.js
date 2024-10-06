@@ -526,6 +526,19 @@ let styledData = `
         border-radius: 4px;
     }
 
+    .new_non_selected_prompts_notAllowed {
+        border: 1px solid #CCCCCC;
+        border-radius: 30px;
+        background: #F9FAFB;
+        width: 106px;
+        height: 32px;
+        text-align: center;
+        padding: 6px 12px;
+        color: #282829;
+        font-weight: 500;
+        cursor: not-allowed;
+    }
+
 `
 let styleSection = `\`${styledData}\``;
 
@@ -535,54 +548,6 @@ export default {
     template: `
         if (appSettings && appSettings.default) {
             const { useState, useEffect, useRef } = React;   
-                
-            //generate Auth Token API
-            async function generateTokenApi(user_setting_response, emailId, isAuthuu) {
-                try {
-                const model_type = user_setting_response.settings.Zendesk_PromptoGPT_modeltype;
-                const usecase = user_setting_response.settings.Zendesk_PromptoGPT_usecase;
-
-                const promptoGPT_toggle = user_setting_response.settings.Zendesk_PromptoGPT_toggle;
-                const knowledgeAssist_toggle = user_setting_response.settings.Zendesk_KnowledgeAssist_toggle;
-                const authorAI_toggle = user_setting_response.settings.Kustomer_AuthorAI;
-
-                const apitoken = user_setting_response?.settings.x_apitoken;
-                const apikey = user_setting_response?.settings.x_apikey;
-                let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.generate_authtoken_api_data/run';
-                let authResponse = await KustomerRequest({
-                    url: endpoint,
-                    method: 'POST',
-                    body: {
-                    "headers": {
-                        "Content-Type": "application/json",
-                        "x-apitoken": apitoken,
-                        "x-apikey": apikey,
-                        "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
-                        "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
-                    },
-                    "body": {
-                        "email": emailId
-                    }
-                    }
-                },
-                    (err, response) => {
-                    if (err) {
-                        console.log("Into 1")
-                        return 'Failed to process return'
-                    } else if (response.responseBody.errors) {
-                        console.log("Into 2")
-                        return response.responseBody.errors.message;
-                    }
-                    }
-                );
-                const data = authResponse?.data?.attributes?.responseBody;
-                const authToken = data.authToken;
-                const clientAuthToken = data.clientAuthToken;
-                return { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle }
-                } catch (err) {
-                console.log("Error in generateTokenApi::", err);
-                }
-            }  
 
             const createPayload = (module, action) => {
                 return [
@@ -703,6 +668,56 @@ export default {
                         });
                     }
 
+                    //generate Auth Token API
+                    async function generateTokenApi(user_setting_response, emailId, isAuthuu) {
+                        try {
+                        const model_type = user_setting_response.settings.Zendesk_PromptoGPT_modeltype;
+                        const usecase = user_setting_response.settings.Zendesk_PromptoGPT_usecase;
+
+                        const promptoGPT_toggle = user_setting_response.settings.Zendesk_PromptoGPT_toggle;
+                        const knowledgeAssist_toggle = user_setting_response.settings.Zendesk_KnowledgeAssist_toggle;
+                        const authorAI_toggle = user_setting_response.settings.Kustomer_AuthorAI;
+
+                        const apitoken = user_setting_response?.settings.x_apitoken;
+                        const apikey = user_setting_response?.settings.x_apikey;
+                        let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.generate_authtoken_api_data/run';
+                        let authResponse = await KustomerRequest({
+                            url: endpoint,
+                            method: 'POST',
+                            body: {
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "x-apitoken": apitoken,
+                                "x-apikey": apikey,
+                                "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
+                                "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
+                            },
+                            "body": {
+                                "email": emailId
+                            }
+                            }
+                        },
+                            (err, response) => {
+                            if (err) {
+                                console.log("Into 1")
+                                return 'Failed to process return'
+                            } else if (response.responseBody.errors) {
+                                console.log("Into 2")
+                                return response.responseBody.errors.message;
+                            }
+                            }
+                        );
+                        const data = authResponse?.data?.attributes?.responseBody;
+                        const authToken = data.authToken;
+                        const clientAuthToken = data.clientAuthToken;
+                        setLoading(false);
+                        setSettingStatus(true);
+                        return { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle }
+                        } catch (err) {
+                        console.log("Error in generateTokenApi::", err);
+                        }
+                    }  
+
                     // Handle like click
                     const handleLikeClick = async (index, selectionDataItem) => {
                         setLikedState(prevState => ({
@@ -720,7 +735,7 @@ export default {
                             'Kustomer_AuthorAI_clicked_star_rating',
                             'Success'
                         );
-                        let thumbs_up_msg = "Rating: Thumbs up\nAPI response: " + " " + selectionDataItem?.originalData;
+                        let thumbs_up_msg = "Rating: Thumbs up API response: " + " " + selectionDataItem?.originalData;
                         await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: thumbs_up_msg });
                     }
 
@@ -741,9 +756,55 @@ export default {
                             'Kustomer_AuthorAI_clicked_star_rating',
                             'Success'
                         );
-                        let thumbs_down_msg = "Rating: Thumbs down\nAPI response: " + " " + selectionDataItem?.originalData;
+                        let thumbs_down_msg = "Rating: Thumbs down API response: " + " " + selectionDataItem?.originalData;
                         await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: thumbs_down_msg });
                     };
+
+                    const promptoApi = async () => {
+                        try {
+                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.promptogpt/run';
+                            let setting_token = "Bearer" + " " + settingreg?.setting_token;
+                            let prompRes = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                body: {
+                                    "headers": {
+                                        "authorization": setting_token
+                                    },
+                                    "body": {
+                                        "appName": "PromptoGPT",
+                                        "page": 1,
+                                        "take": 10,
+                                        "searchCriterias": [
+                                            {
+                                                "criteriaName": "CATEGORY",
+                                                "value": ""
+                                            }
+                                        ],
+                                        "email": isEmail
+                                    }
+                                }
+                            }, (err, res) => {
+                                if (err) {
+                                    console.log("Into exhealth Error ", err)
+                                    return 'Failed to process return'
+                                } else if (response.responseBody.errors) {
+                                    return response.responseBody.errors.message;
+                                }
+                            }
+                            );
+                            if (prompRes?.data?.attributes?.responseBody) {
+                                console.log("prompRes Response ::", prompRes?.data?.attributes?.responseBody?.data[0])
+                                setPreShortcuts({
+                                    ...preShortcuts,
+                                    temp_json: prompRes?.data?.attributes?.responseBody?.data[0]?.jsonValue
+                                })
+                                return prompRes?.data?.attributes?.responseBody;
+                            }
+                        } catch (err) {
+                            console.log("Error in promptoApi::", err)
+                        }
+                    }
 
                     const highlightHeadings = (text) => {
                         // Ensure the input is a string
@@ -972,6 +1033,88 @@ export default {
                         if (generateToken) {
                         }       
                     }, [generateToken]);  
+
+                    const refreshTokenApi = async (refresh_token) => {
+                        try {
+                            let endpoint = '/v1/commands/' + isAppId.appId + '.app.refresh_token/run';
+                            let token = 'Bearer' + " " + refresh_token;
+                            let refresh_res = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                headers: {
+                                    'Authorization': token,
+                                    "Content-Type": "application/json"
+                                }
+                            },
+                                (err, response) => {
+                                    if (err) {
+                                        console.log("Into refreshTokenApi Error ", err)
+                                        return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                        return response.responseBody.errors.message;
+                                    }
+                                }
+                            );
+                            if (refresh_res?.data?.attributes?.responseBody) {
+                                return refresh_res?.data?.attributes?.responseBody;
+                            }
+                        } catch (err) {
+                            console.log("Error in refreshTokenApi::", err);
+                        }
+                    }
+
+                    useEffect(() => {
+                        function healthCheckUp() {
+                            try {
+                                if (user_setting_state?.refreshToken) {
+                                    exhealth().then(async (response) => {
+
+                                    }).catch((error) => {
+                                        if (error.message == "Invalid JWT Token") {
+                                            refreshTokenApi(user_setting_state?.refreshToken)
+                                                .then((res) => {
+                                                    setUser_setting_state({
+                                                        ...user_setting_state,
+                                                        refreshToken: res?.refreshToken,
+                                                        setting_token: res?.authToken
+                                                    });
+                                                    if (res?.authToken) return exhealth();
+                                                }).catch((error) => {
+                                                    handleSessionInvalidation(error);
+                                                })
+                                        }
+                                    })
+                                } 
+
+                                function handleSessionInvalidation(error) {
+                                    // const datum = sessionStorage.getItem('isLoggedIn');
+                                    setTimeout(() => {
+                                        setLoading(false);
+                                        setSettingStatus(false);
+                                    }, 5000);
+                                    setLoading(false);
+                                    sessionStorage.setItem('authorAILoggedIn', false);
+                                    setLoggedStatus(false);
+                                    setApiCall(false);
+                                    sessionStorage.setItem('authorAIsettingStatus', false);
+                                    setSettingStatus(false);
+
+                                    throw error;
+                                }
+
+                            } catch (error) {
+                                console.log("Error in healthCheckUp::", error)
+                            }
+                        }
+
+                        const intervalId = setInterval(() => {
+                            // healthCheckUp()
+                        }, 5000)
+
+                        // Clear the interval when the component is unmounted or when isRefreshToken changes
+                        return () => clearInterval(intervalId);
+
+                    }, [settingreg?.refreshToken])
 
                     useEffect(() => {
                         const dataPrompt = async () => {
@@ -1431,7 +1574,10 @@ export default {
                             );
                             let custom_prompt = {
                                 displayName: "Write a Custom Prompt",
-                                name: "custom_prompt"
+                                name: "custom_prompt",
+                                useCase: {
+                                    aiName: "custom_prompt"
+                                }
                             };
                             let configRes = response?.data?.attributes?.responseBody;
                             console.log("configRes", configRes);
@@ -1482,14 +1628,14 @@ export default {
                                 setLoading(false);
                             } else {
                                 sessionStorage.setItem('authorAIStatus', true);
-                                setSettingStatus(true);
+                                // setSettingStatus(true);
                                 setSettingreg({
                                     refreshToken: settingRes?.refresh_token,
                                     settingResponse: settingRes,
                                     setting_token: settingRes?.authToken
                                 });
                                 // setSettingreg(settingRes);
-                                setLoading(false);
+                                // setLoading(false);
                                 const logMsg = "Successfully LoggedIn";
                                 const payload = createPayload(
                                 'Kustomer_LoggedIn',
@@ -2189,43 +2335,67 @@ export default {
                     const middlePart = () => {
                         console.log("((lastUserRes === 'Agent') || (channelType === 'email'))", ((lastUserRes === 'Agent') || (channelType === "email")))
                         return (
-                            <div className="latest_AI_types">
-                                {(generateToken?.promptoGPT_toggle === "true") &&
-                                    (((lastUserRes === 'Agent') || (channelType === "email")) ?
-                                        <div
-                                            className={"new_non_selected_prompts_notAllowed notAllowed"}
-                                        // onClick={() => ((lastUserRes === 'Agent') || (channelType === "email")) ? console.log() : selectingAI("promptogpt")}
-                                        >
-                                            Prompt<sup>AI</sup>
-                                        </div> :
-                                        <div
-                                            className={ischeckboxType == "promptogpt" ? "new_selected_prompts" : "new_non_selected_prompts"}
-                                            onClick={() => selectingAI("promptogpt")}
-                                        >
-                                            Prompt<sup>AI</sup>
-                                        </div>
-                                    )
+                            <>
+                                {(isSettingStatus) && (generateToken?.promptoGPT_toggle || generateToken?.knowledgeAssist_toggle || generateToken?.authorAI_toggle) ?
+                                    <div className="latest_AI_types">
+                                        {(generateToken?.promptoGPT_toggle === "true") &&
+                                            (((lastUserRes === 'Agent') || (channelType === "email")) ?
+                                                <div
+                                                    className={"new_non_selected_prompts_notAllowed notAllowed"}
+                                                // onClick={() => ((lastUserRes === 'Agent') || (channelType === "email")) ? console.log() : selectingAI("promptogpt")}
+                                                >
+                                                    Prompt<sup>AI</sup>
+                                                </div> :
+                                                <div
+                                                    className={ischeckboxType == "promptogpt" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                                    onClick={() => selectingAI("promptogpt")}
+                                                >
+                                                    Prompt<sup>AI</sup>
+                                                </div>
+                                            )
+                                        }
+                                        {(generateToken?.knowledgeAssist_toggle === "true") &&
+                                            <div
+                                                className={ischeckboxType == "knowledge_assist" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                                onClick={() => selectingAI("knowledge_assist")}
+                                            >
+                                                Assist<sup>AI</sup>
+                                            </div>}
+                                        {(generateToken?.authorAI_toggle === "true") &&
+                                            <div
+                                                className={ischeckboxType == "authorAI" ? "new_selected_prompts" : "new_non_selected_prompts"}
+                                                onClick={() => selectingAI("authorAI")}
+                                            >
+                                                Author<sup>AI</sup>
+                                            </div>}
+                                    </div>
+                                    :
+                                    <div style={{
+                                        display: "flex",
+                                        margin: "10px 0px 5px",
+                                        fontWeight: "600",
+                                        color: "#000000",
+                                        fontSize: "14px",
+                                        gap: "8px",
+                                        fontStyle: "normal",
+                                        alignItems: "center",
+                                        fontFamily: "poppins"
+                                    }}>
+                                        <span className={'loader-prompt'}></span>
+                                        <span>TaskGPT is loading...</span>
+                                    </div>
+
+
                                 }
-                                {(generateToken?.knowledgeAssist_toggle === "true") &&
-                                    <div
-                                        className={ischeckboxType == "knowledge_assist" ? "new_selected_prompts" : "new_non_selected_prompts"}
-                                        onClick={() => selectingAI("knowledge_assist")}
-                                    >
-                                        Assist<sup>AI</sup>
-                                    </div>}
-                                {(generateToken?.authorAI_toggle === "true") &&
-                                    <div
-                                        className={ischeckboxType == "authorAI" ? "new_selected_prompts" : "new_non_selected_prompts"}
-                                        onClick={() => selectingAI("authorAI")}
-                                    >
-                                        Author<sup>AI</sup>
-                                    </div>}
-                            </div>
+
+                            </>
+
                         )
                     }
 
                     const dashboardComponent = () => {
-                        let url=isAuthuu?.url_def;
+                        // let url=isAuthuu?.url_def;
+                        let url="https://taskgpt-access.taskus.com/chatbot/floatingwidget?authToken=";
                         let token = generateToken?.client_authtoken;
                         let end_url='&email='+isEmail+'&clientType=extension';
                         let last_url=url+token+end_url;
