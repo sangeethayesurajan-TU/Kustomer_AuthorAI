@@ -2458,7 +2458,7 @@ export default {
                                         </div>
                                         :
                                         ((ischeckboxType === "authorAI") ? 
-                                            <>{selectedText}</>
+                                            <></>
                                         :<></>
                                         )
                                     )
