@@ -2,13 +2,13 @@ import kview from "./kview";
 
 
 const aapikey = process.env.aapikey;
-const aauthtoken= process.env.aauthtoken;
+const aauthtoken = process.env.aauthtoken;
 
-console.log("apikey => ", aapikey, "authtoken ",aauthtoken)
+console.log("apikey => ", aapikey, "authtoken ", aauthtoken)
 
 export default {
     app: "sample_authorai",
-    version: "0.0.92",
+    version: "0.0.118",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -16,14 +16,14 @@ export default {
             displayName: "Config",
             url: "https://taskgpt-access.taskus.com/api/external/getInstanceUsecaseConfig/Global",
             cacheSeconds: 15,
-            httpMethod: "get"    
+            httpMethod: "get"
         },
         {
             name: "login_api_data",
             displayName: "Loginres",
             url: "https://orchestrator.taskus.com/api/settings/usercheck?app=PromptoGPT",
             cacheSeconds: 15,
-            httpMethod: "post",           
+            httpMethod: "post",
         },
         {
             name: "setting_api_data",
@@ -43,7 +43,7 @@ export default {
         {
             name: "generate_authtoken_api_data",
             displayName: "Generatetokenres",
-            url: "https://taskgpt-access.taskus.com/api/external/user/authToken?userInfo=true&assginedChatbots=true&clientToken=true&userAuthToken=true&externalClientType=chrome_extension&generateNewSessionId=true",
+            url: "https://taskgpt-access.taskus.com/api/external/user/authToken?userInfo=true&assginedChatbots=true&clientToken=true&userAuthToken=true&externalClientType=chrome_extension&generateNewSessionId=true&authorAIInstances=true&promptAIInstances=true",
             cacheSeconds: 15,
             httpMethod: "post"
         },
@@ -62,7 +62,7 @@ export default {
             httpMethod: "post"
         },
         {
-            name: "exhealth_check_api",            
+            name: "exhealth_check_api",
             displayName: "Exhealth Api",
             url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
             cacheSeconds: 15,
@@ -86,6 +86,34 @@ export default {
             displayName: "logsapires",
             url: "https://orchestrator.taskus.com/api/event/create?app=PromptoGPT",
             httpMethod: "post"
+        },
+        {
+            name: "sample_query",
+            displayName: "querysample",
+            inputSchema: {},
+            // type: "external-api",
+            permittedUrlArgs: ["instanceId"],
+            // url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/:instanceId"
+            url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/{{{instanceId}}}",
+            httpMethod: "post",
+            cacheSeconds: 15,
+            auditLogging: true,
+            // inputSchema: {
+            //     instanceId: {
+            //         type: "string",
+            //         description: "The ID of the instance to fetch details for"
+            //     }
+            // },
+            // inputSchema: {
+            //     "type": "object",
+            //     "properties": {
+            //         "instanceId": {
+            //             "type": "string"
+            //         }
+            //     }
+                
+            // },            
+
         }
     ],
     settings: {

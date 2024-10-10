@@ -2563,6 +2563,43 @@ export default {
                         )
                     }
 
+                    async function getTemplateLists() {
+                        try {
+                            let instanceId = "1";
+                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.sample_query/run';
+                            let responseData = await KustomerRequest({
+                                url: endpoint,
+                                method: 'POST',
+                                body: {
+                                    "headers": {
+                                        "x-apitoken": "3088aa1db778d372f221e5651c331034c7fd7c703ebd3e54f197d3542ff446b4",
+                                        "x-apikey": "taskgptdev",
+                                        "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
+                                        "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    },
+                                    "urlArgs": { instanceId }
+                                }
+
+                            },
+                                (err, response) => {
+                                    if (err) {
+                                        console.log("Into Args 1")
+                                        return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                        console.log("Into Args 2")
+                                        return response.responseBody.errors.message;
+                                    }
+                                }
+                            );
+
+                            let data = responseData?.data?.attributes?.responseBody;
+                            console.log("getTemplateLists getTemplateLists ", data)
+
+                        } catch (err) {
+                            console.log("Error in getTemplateLists::", err);
+                        }
+                    }
+
                     return (
                         // <div style={{padding: "10px"}}>
                         <div style={{padding: "5px"}}>
@@ -2576,6 +2613,11 @@ export default {
                             
                             }
                             {footerPart()}
+                            <button
+                                onClick={() => getTemplateLists()}
+                            >
+                                Click me
+                            </button>
                             <style>{${styleSection}}</style>
                         </div>
                     )
