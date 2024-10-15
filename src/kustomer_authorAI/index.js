@@ -8,7 +8,7 @@ console.log("apikey => ", aapikey, "authtoken ", aauthtoken)
 
 export default {
     app: "sample_authorai",
-    version: "0.0.118",
+    version: "0.0.119",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -90,20 +90,21 @@ export default {
         {
             name: "sample_query",
             displayName: "querysample",
-            inputSchema: {},
+            // inputSchema: {},
             // type: "external-api",
             permittedUrlArgs: ["instanceId"],
             // url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/:instanceId"
             url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/{{{instanceId}}}",
-            httpMethod: "post",
+            // httpMethod: "post",
+            httpMethod: "get",
             cacheSeconds: 15,
-            auditLogging: true,
-            // inputSchema: {
-            //     instanceId: {
-            //         type: "string",
-            //         description: "The ID of the instance to fetch details for"
-            //     }
-            // },
+            // auditLogging: true,
+            inputSchema: {
+                instanceId: {
+                    type: "string",
+                    description: "The ID of the instance to fetch details for"
+                }
+            },
             // inputSchema: {
             //     "type": "object",
             //     "properties": {
