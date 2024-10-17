@@ -668,6 +668,39 @@ export default {
                         });
                     }
 
+                    async function getDevTemplateList() {
+                        let endpoint = "https://dev.democenter.app.taskus.com/api/external/getTemplateList/1";
+                        console.log("endpoint endpoint ::", endpoint);
+                        try {                    
+                            let response = await fetch(endpoint, {
+                                method: "POST",
+                                headers: {
+                                    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTc3LCJ1c2VyX25hbWUiOiJzYW5nZWV0aGEueWVzdXJhamFuQHRhc2t1cy5jb20iLCJlbWFpbCI6InNhbmdlZXRoYS55ZXN1cmFqYW5AdGFza3VzLmNvbSIsIm5hbWUiOiJTYW5nZWV0aGEgWWVzdXJhamFuIiwic3RhdHVzIjp0cnVlLCJpc19zdXBlckFkbWluIjpmYWxzZSwiaWF0IjoxNzI5MTQyODk4LCJleHAiOjE3MjkxNDg1OTh9.SlLP9c32ICMCvpw1OLNDuowv5tEPUHSSSRTUUZV_HFA",
+                                    "content-type": "application/json",
+                                    "x-apikey": "taskgptdev",
+                                    "x-apitoken": "3088aa1db778d372f221e5651c331034c7fd7c703ebd3e54f197d3542ff446b4",
+                                    "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
+                                    "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                },                        
+                                // mode: 'no-cors',
+                                body: JSON.stringify({
+                                    "page": 1,
+                                    "take": 10,
+                                    "searchBy": "",
+                                    "filterBy": ""
+                                })
+                            });
+
+                            if (!(response.ok)) {
+                                throw new Error('Http error status', response?.status, response);
+                            } 
+                            let templateListData = await response.json();
+                            console.log("templateListData templateListData ", templateListData)
+                        } catch (err) {
+                            console.log("Error in getTemplateList::", err);
+                        }
+                    }
+
                     //generate Auth Token API
                     async function generateTokenApi(user_setting_response, emailId, isAuthuu) {
                         try {
@@ -2567,18 +2600,21 @@ export default {
                         try {
                             let instanceId = "1";
                             let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.sample_query/run';     
-                            let endpoint = http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/1;                         
+                            // let endpoint = http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/1;                         
                             let responseData = await KustomerRequest({
                                 url: endpoint,
-                                // method: 'POST',
-                                method: 'GET',
-                                header: {
+                                method: 'POST',
+                                // method: 'GET',
+                                "headers": {
+                                    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTc3LCJ1c2VyX25hbWUiOiJzYW5nZWV0aGEueWVzdXJhamFuQHRhc2t1cy5jb20iLCJlbWFpbCI6InNhbmdlZXRoYS55ZXN1cmFqYW5AdGFza3VzLmNvbSIsIm5hbWUiOiJTYW5nZWV0aGEgWWVzdXJhamFuIiwic3RhdHVzIjp0cnVlLCJpc19zdXBlckFkbWluIjpmYWxzZSwiaWF0IjoxNzI5MTQyODk4LCJleHAiOjE3MjkxNDg1OTh9.SlLP9c32ICMCvpw1OLNDuowv5tEPUHSSSRTUUZV_HFA",
                                     "x-apitoken": "3088aa1db778d372f221e5651c331034c7fd7c703ebd3e54f197d3542ff446b4",
                                     "x-apikey": "taskgptdev",
                                     "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
                                     "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
                                 },
-                                urlArgs: {instanceId}
+                                body: {
+                                    "urlArgs": { instanceId }
+                                }
 
                             },
                                 (err, response) => {
@@ -2615,6 +2651,7 @@ export default {
                             {footerPart()}
                             <button
                                 onClick={() => getTemplateLists()}
+                                // onClick={() => getDevTemplateList()}
                             >
                                 Click me
                             </button>
