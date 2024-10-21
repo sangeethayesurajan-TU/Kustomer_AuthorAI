@@ -541,6 +541,10 @@ let styledData = `
 
 `
 let styleSection = `\`${styledData}\``;
+let instance_key = process.env.x_Dev_apiKey;
+let instance_t = process.env.x_Dev_apitoken;
+let client_id = process.env.Dev_CF_ACCESS_CLIENT_ID;
+let client_sec = process.env.Dev_CF_ACCESS_CLIENT_SECRET;
 
 export default {
     name: "sample_authorai",
@@ -557,6 +561,18 @@ export default {
                 },
                 ];
             };
+
+            let instance_key = "${instance_key}";
+            let instance_t = "${instance_t}";
+            let client_id = "${client_id}";
+            let client_sec = "${client_sec}";
+
+            let dev_headers = {
+                "x-apikey": "${instance_key}",
+                "x-apitoken": "${instance_t}",
+                "CF-ACCESS-CLIENT-ID": "${client_id}",
+                "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
+            }            
                 
             async function logsAPI({ isAuthuu, setting_token, user_setting, PAYLOAD_FOR_EVENT, UUID = null, log_message = null }) {
                 let app_version = "1.0.0"
@@ -718,13 +734,14 @@ export default {
                             url: endpoint,
                             method: 'POST',
                             body: {
-                            "headers": {
-                                "Content-Type": "application/json",
-                                "x-apitoken": apitoken,
-                                "x-apikey": apikey,
-                                "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
-                                "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
-                            },
+                            // "headers": {
+                            //     "Content-Type": "application/json",
+                            //     "x-apitoken": apitoken,
+                            //     "x-apikey": apikey,
+                            //     "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
+                            //     "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
+                            // },
+                            headers: dev_headers,
                             "body": {
                                 "email": emailId
                             }
@@ -743,9 +760,10 @@ export default {
                         const data = authResponse?.data?.attributes?.responseBody;
                         const authToken = data.authToken;
                         const clientAuthToken = data.clientAuthToken;
+                        const authorAIInstance = data?.authorAIInstances
                         setLoading(false);
                         setSettingStatus(true);
-                        return { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle }
+                        return { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle, authorAIInstance }
                         } catch (err) {
                         console.log("Error in generateTokenApi::", err);
                         }
@@ -926,7 +944,7 @@ export default {
                                 let originalData = response?.data?.attributes?.responseBody?.answer;
                                 let showText = payload.body?.question;
                                 let res_useCase_option = {
-                                    usecase: payload?.body?.usecase,
+                                    usecase: payload?.body?.useCase,
                                     useCaseOption: payload?.body?.usecase_options
                                 }
                                 let category = payload?.category;
@@ -1005,15 +1023,19 @@ export default {
                         let updatedAuth = {};
                         (appSettings?.default || []).forEach((item) => {
                             if (item.attributes.name === 'apikey') {
-                            updatedAuth.api_key = item.attributes.value;
+                                updatedAuth.api_key = item.attributes.value;
                             }
                             if (item.attributes.name === 'authtoken') {
-                            updatedAuth.authtoken = item.attributes.value;
-                            updatedAuth.appId = item.attributes.app;
+                                updatedAuth.authtoken = item.attributes.value;
+                                updatedAuth.appId = item.attributes.app;
                             }
                             if (item.attributes.name === 'url_def') {
-                            updatedAuth.url_def = item.attributes.value;
-                            updatedAuth.appId = item.attributes.app;
+                                updatedAuth.url_def = item.attributes.value;
+                                updatedAuth.appId = item.attributes.app;
+                            }
+                            if (item.attributes.name === 'dev_normal_url') {
+                                updatedAuth.dev_normal_url = item.attributes.value;
+                                updatedAuth.appId = item.attributes.app; 
                             }
                         });
                         setAuthuu(updatedAuth);
@@ -1586,6 +1608,64 @@ export default {
                         }
                     }
 
+                    const fetchupdatedGlobalConfigApi = async (authorAIInstance_data) => {
+                        try {
+                            let endpoint = isAuthuu?.dev_normal_url + "/api/external/getInstanceUsecaseConfig/"+authorAIInstance_data[1]?.name;
+                            let fetchUpdatedRes = await fetch(endpoint, {
+                                method: "GET",
+                                headers: dev_headers
+                            });
+
+                            if (!(fetchUpdatedRes.ok)) {
+                                throw new Error("HTTP error! status:", fetchUpdatedRes?.status)
+                            }
+                            const data = await fetchUpdatedRes.json();
+                            console.log("fetchupdatedGlobalConfigApi ::", endpoint, data);
+                            let custom_prompt = {
+                                displayName: "Write a Custom Prompt",
+                                name: "custom_prompt",
+                                useCase: {
+                                    aiName: "custom_prompt"
+                                }
+                            };
+                            let configRes = data;
+                            console.log("configRes", configRes);
+                            configRes?.data?.preShortcuts?.push(custom_prompt);
+                            setPostpreConfig({
+                                postShortcuts: configRes?.data?.postShortcuts,
+                                preShortcuts: configRes?.data?.preShortcuts
+                            });
+                        } catch (err) {
+                            console.log("Error in fetchupdatedGlobalConfigApi::", err);
+                        }
+                    }
+
+                    const updatedGlobalConfigApi = async () => {
+                        try {
+                            let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.updated_global_config_api/run';
+                            let updatedResponse = await KustomerRequest({
+                                url: endpoint,
+                                method: "POST",
+                                body: {
+                                    "headers": {
+                                        "x-apikey": "{{{dev_apiKey}}}",
+                                        "x-apitoken": "{{{dev_apitoken}}}",
+                                        "CF-ACCESS-CLIENT-ID": "{{{cloudFlare_Id}}}",
+                                        "CF-ACCESS-CLIENT-SECRET": "{{{cloudFlare_Secret}}}"
+                                    }
+                                }
+                            },  (err, res) => {
+                                    if (err) {
+                                        return 'Failed to process return'
+                                    }
+                                }
+                            );
+                            console.log("updatedResponse ",updatedResponse)
+                        } catch (error) {
+                            console.log("Error in updatedGlobalConfigApi::", error)
+                        }
+                    }
+
                     const globalConfigApi = async (x_apitoken, x_apikey) => {
                         try {
                             let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.global_config_api/run';
@@ -1629,30 +1709,30 @@ export default {
                         let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.setting_api_data/run';
                         try {
                             let data = await KustomerRequest({
-                            url: endpoint,
-                            method: 'POST',
-                            body: {
-                                "headers": {
-                                "X-ApiToken": "{{{aauthtoken}}}",
-                                "X-ApiKey": "{{{aapikey}}}",
-                                "Accept": "application/json",
-                                "Content-Type": "application/json"
-                                },
-                                "body": {
-                                "email": isEmail
+                                url: endpoint,
+                                method: 'POST',
+                                body: {
+                                    "headers": {
+                                        "X-ApiToken": "{{{aauthtoken}}}",
+                                        "X-ApiKey": "{{{aapikey}}}",
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json"
+                                    },
+                                    "body": {
+                                        "email": isEmail
+                                    }
                                 }
-                            }
                             },
-                            (err, response) => {
-                                if (err) {
-                                console.log("Into 1")
-                                setLoading(false);
-                                return 'Failed to process return'
-                                } else if (response.responseBody.errors) {
-                                console.log("Into 2")
-                                return response.responseBody.errors.message;
+                                (err, response) => {
+                                    if (err) {
+                                        console.log("Into 1")
+                                        setLoading(false);
+                                        return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                        console.log("Into 2")
+                                        return response.responseBody.errors.message;
+                                    }
                                 }
-                            }
                             );
                             let settingRes = data?.data?.attributes?.responseBody
                             if (settingRes?.message === "Authentication failed ") {
@@ -1676,8 +1756,9 @@ export default {
                                 );
                                 await logsAPI({ isAuthuu: isAuthuu, setting_token: settingRes?.authToken, user_setting: settingRes, PAYLOAD_FOR_EVENT: payload, log_message: logMsg });
                                 // const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle } = await generate_auth_client_token(settingRes, isEmail);
-                                globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);
-                                const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle } = await generateTokenApi(settingRes, isEmail, isAuthuu);
+                                // globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);
+                                const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle, authorAIInstance } = await generateTokenApi(settingRes, isEmail, isAuthuu);
+                                fetchupdatedGlobalConfigApi(authorAIInstance);
                                 setGenerateToken(
                                 {
                                     authToken: authToken,
@@ -1765,14 +1846,17 @@ export default {
                                 body: {
                                     "application_name": "TaskScribe",
                                     "model_type": model_type,
-                                    "usecase": sub_category?.useCase?.aiName,
+                                    // "usecase": sub_category?.useCase?.aiName,
+                                    "usecase": sub_category?.prompt,
                                     "question": textData,
                                     "user_id": isEmail,
                                     //"enable_automasking": true
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken
+                                    "X-Authtoken": auto_authToken,
+                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
+                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -1824,14 +1908,17 @@ export default {
                                 body: {
                                     "application_name": "TaskScribe",
                                     "model_type": model_type,
-                                    "usecase": item?.useCase?.aiName,
+                                    // "usecase": item?.useCase?.aiName,
+                                    useCase: item?.prompt,
                                     "question": textData,
                                     "user_id": isEmail,
                                     // "enable_automasking": true
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken
+                                    "X-Authtoken": auto_authToken,
+                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
+                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -1937,14 +2024,16 @@ export default {
                                 body: {
                                     "application_name": "TaskScribe",
                                     "model_type": model_type,
-                                    "usecase": preShortcuts?.preShortcutOption?.useCase?.aiName,
+                                    "usecase": preShortcuts?.preShortcutOption?.prompt,
                                     "question": textArea,
                                     "user_id": isEmail,
                                     // "enable_automasking": true
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken
+                                    "X-Authtoken": auto_authToken,
+                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
+                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
                                 },
                                 category: {
                                     main_category: preShortcuts?.preShortcutOption?.displayName,
@@ -1953,7 +2042,7 @@ export default {
 
                             }
                             if (preShortcuts?.preShortcutOption?.name != "TEMPLATE_MENU") {
-                                payload.body['usecase_options'] = preShortcuts?.preShortcutOption?.name
+                                // payload.body['usecase_options'] = preShortcuts?.preShortcutOption?.name
                             } else {
                                 payload.body['usecase_options'] = {
                                     name: "email",
@@ -2209,7 +2298,9 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": generateToken?.authToken
+                                    "X-Authtoken": generateToken?.authToken,
+                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
+                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
                                 },
                                 category: {
                                     main_category: selectionData?.category?.main_category,
@@ -2596,7 +2687,7 @@ export default {
                         )
                     }
 
-                    async function getTemplateLists() {
+                    async function getCommandTemplateLists() {
                         try {
                             let instanceId = "1";
                             let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.sample_query/run';     
@@ -2605,15 +2696,15 @@ export default {
                                 url: endpoint,
                                 method: 'POST',
                                 // method: 'GET',
-                                "headers": {
-                                    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTc3LCJ1c2VyX25hbWUiOiJzYW5nZWV0aGEueWVzdXJhamFuQHRhc2t1cy5jb20iLCJlbWFpbCI6InNhbmdlZXRoYS55ZXN1cmFqYW5AdGFza3VzLmNvbSIsIm5hbWUiOiJTYW5nZWV0aGEgWWVzdXJhamFuIiwic3RhdHVzIjp0cnVlLCJpc19zdXBlckFkbWluIjpmYWxzZSwiaWF0IjoxNzI5MTQyODk4LCJleHAiOjE3MjkxNDg1OTh9.SlLP9c32ICMCvpw1OLNDuowv5tEPUHSSSRTUUZV_HFA",
-                                    "x-apitoken": "3088aa1db778d372f221e5651c331034c7fd7c703ebd3e54f197d3542ff446b4",
-                                    "x-apikey": "taskgptdev",
-                                    "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
-                                },
+                                
                                 body: {
-                                    "urlArgs": { instanceId }
+                                    "body": {
+                                        "page": 1,
+                                        "take": 10,
+                                        "searchBy": "",
+                                        "filterBy": ""
+                                    },
+                                    "args": { instanceId }
                                 }
 
                             },
@@ -2629,10 +2720,10 @@ export default {
                             );
 
                             let data = responseData?.data?.attributes?.responseBody;
-                            console.log("getTemplateLists getTemplateLists ", data)
+                            console.log("getCommandTemplateLists ", data)
 
                         } catch (err) {
-                            console.log("Error in getTemplateLists::", err);
+                            console.log("Error in getCommandTemplateLists::", err);
                         }
                     }
 
