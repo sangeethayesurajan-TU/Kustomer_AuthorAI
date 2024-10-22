@@ -1,6 +1,6 @@
 import kview from "./kview";
 
-let environmet = "dev";
+let environmet = "uat";
 const aapikey = process.env.aapikey;
 const aauthtoken = process.env.aauthtoken;
 let x_apikey = process.env.x_Dev_apiKey;
@@ -10,9 +10,35 @@ let Dev_CF_ACCESS_CLIENT_SECRET = process.env.Dev_CF_ACCESS_CLIENT_SECRET;
 let url_endpoint_orchestrator;
 let url_normal_endpoint;
 
+function selecting_endpoint(branch_name) {
+    try {
+        switch (branch_name) {
+            case "dev":
+                url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
+                url_normal_endpoint = process.env.dev_endpoint;
+                break;
+            case "uat":
+                url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
+                url_normal_endpoint = process.env.prod_endpoint
+                break;
+            case "prod":
+                url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
+                url_normal_endpoint = process.env.democenter_endpoint
+                break;
+            default:
+                break;
+
+        }
+    } catch (err) {
+        console.log("Error in selecting_endpoint::", err);
+    }
+}
+
+selecting_endpoint(environmet);
+
 if (environmet == "dev") {
     url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
-    url_normal_endpoint = process.env.dev_endpoint
+    url_normal_endpoint = process.env.dev_endpoint;
 } else {
     url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
     url_normal_endpoint = process.env.prod_endpoint
@@ -29,7 +55,7 @@ export default {
             name: "global_config_api",
             displayName: "Config",
             // url: "https://taskgpt-access.taskus.com/api/external/getInstanceUsecaseConfig/Global",
-            url: url_normal_endpoint+""+"/api/external/getInstanceUsecaseConfig/Kustomer",
+            url: url_normal_endpoint + "" + "/api/external/getInstanceUsecaseConfig/Kustomer",
             cacheSeconds: 15,
             httpMethod: "get"
         },
@@ -56,16 +82,16 @@ export default {
         {
             name: "login_api_data",
             displayName: "Loginres",
-            url: "https://orchestrator.taskus.com/api/settings/usercheck?app=PromptoGPT",
-            // url: url_endpoint + "" + "/api/settings/usercheck?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/settings/usercheck?app=PromptoGPT",
+            url: url_endpoint_orchestrator + "" + "/api/settings/usercheck?app=PromptoGPT",
             cacheSeconds: 15,
             httpMethod: "post",
         },
         {
             name: "setting_api_data",
             displayName: "Settingresponse",
-            url: "https://orchestrator.taskus.com/api/settings/get?app=PromptoGPT",
-            // url: url_endpoint + "" + "/api/settings/get?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/settings/get?app=PromptoGPT",
+            url: url_endpoint_orchestrator + "" + "/api/settings/get?app=PromptoGPT",
             cacheSeconds: 15,
             httpMethod: "post",
             appSettings: {
@@ -81,7 +107,7 @@ export default {
             name: "generate_authtoken_api_data",
             displayName: "Generatetokenres",
             // url: "https://taskgpt-access.taskus.com/api/external/user/authToken?userInfo=true&assginedChatbots=true&clientToken=true&userAuthToken=true&externalClientType=chrome_extension&generateNewSessionId=true&authorAIInstances=true&promptAIInstances=true",
-            url: url_normal_endpoint+""+"/api/external/user/authToken?userInfo=true&assginedChatbots=true&clientToken=true&userAuthToken=true&externalClientType=chrome_extension&generateNewSessionId=true&authorAIInstances=true&promptAIInstances=true",
+            url: url_normal_endpoint + "" + "/api/external/user/authToken?userInfo=true&assginedChatbots=true&clientToken=true&userAuthToken=true&externalClientType=chrome_extension&generateNewSessionId=true&authorAIInstances=true&promptAIInstances=true",
             cacheSeconds: 15,
             httpMethod: "post"
         },
@@ -89,41 +115,46 @@ export default {
             name: "auto_suggest_api_data",
             displayName: "Autosuggestres",
             // url: "https://taskgpt-access.taskus.com/api/responses/auto_suggest",
-            url: url_normal_endpoint+"/api/responses/auto_suggest",
+            url: url_normal_endpoint + "/api/responses/auto_suggest",
             cacheSeconds: 15,
             httpMethod: "post"
         },
         {
             name: "sensitive_check_api",
             displayName: "Checkapi",
-            url: "https://taskgpt-access.taskus.com/api/sensitiveInfo/check",
+            // url: "https://taskgpt-access.taskus.com/api/sensitiveInfo/check",
+            url: url_normal_endpoint+ "/api/sensitiveInfo/check",
             cacheSeconds: 15,
             httpMethod: "post"
         },
         {
             name: "exhealth_check_api",
             displayName: "Exhealth Api",
-            url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
+            // url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
+            url: url_endpoint_orchestrator+ "/api/sensitiveInfo/check",
             cacheSeconds: 15,
             httpMethod: "post"
         },
         {
             name: "refresh_token",
             displayName: "Refresh Api",
-            url: "https://orchestrator.taskus.com/api/user/refreshToken",
+            // url: "https://orchestrator.taskus.com/api/user/refreshToken",
+            url: url_endpoint_orchestrator+ "/api/user/refreshToken",
             cacheSeconds: 15,
             httpMethod: "post"
         },
         {
             name: "promptogpt",
             displayName: "prompto",
-            url: "https://orchestrator.taskus.com/api/settings/get/propmt_template?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/settings/get/propmt_template?app=PromptoGPT",
+            url: url_endpoint_orchestrator+ "/api/settings/get/propmt_template?app=PromptoGPT",
             httpMethod: "post"
         },
         {
             name: "logs_api_data",
             displayName: "logsapires",
-            url: "https://orchestrator.taskus.com/api/event/create?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/event/create?app=PromptoGPT",
+            url: url_endpoint_orchestrator+ "/api/event/create?app=PromptoGPT",
             httpMethod: "post"
         },
         // {
@@ -181,33 +212,8 @@ export default {
             },
             url_def: {
                 type: "string",
-                defaultValue: "url_def",
-            },
-            dev_apiKey: {
-                type: "secret",
-                defaultValue: x_apikey,
-                description: "External Dev Ex API Key"
-            },
-            dev_apitoken: {
-                type: "secret",
-                defaultValue: x_apitoken,
-                description: "External Dev Ex API Token Key"
-            },
-            cloudFlare_Id: {
-                type: "secret",
-                defaultValue: Dev_CF_ACCESS_CLIENT_ID,
-                description: "External Dev Id Key"
-            },
-            cloudFlare_Secret: {
-                type: "secret",
-                defaultValue: Dev_CF_ACCESS_CLIENT_SECRET,
-                description: "External Dev Token Key"
-            },
-            dev_normal_url: {
-                type: "string",
                 defaultValue: url_normal_endpoint,
-                description: "External Dev URL"
-            }
+            }            
         }
     },
     appDetails: {

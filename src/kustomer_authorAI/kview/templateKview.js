@@ -734,14 +734,14 @@ export default {
                             url: endpoint,
                             method: 'POST',
                             body: {
-                            // "headers": {
-                            //     "Content-Type": "application/json",
-                            //     "x-apitoken": apitoken,
-                            //     "x-apikey": apikey,
-                            //     "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
-                            //     "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
-                            // },
-                            headers: dev_headers,
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "x-apitoken": apitoken,
+                                "x-apikey": apikey,
+                                "CF-Access-Client-Id": user_setting_response?.settings.Democenter_CF_Access_Client_Id,
+                                "CF-Access-Client-Secret": user_setting_response?.settings.Democenter_CF_Access_Client_Secret
+                            },
+                            // headers: dev_headers,
                             "body": {
                                 "email": emailId
                             }
@@ -976,9 +976,7 @@ export default {
                             body: {
                                 "headers": {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auth_token,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "X-Authtoken": auth_token
                                 },
                                 "body": {
                                     "user_id": user_email,
@@ -1579,43 +1577,46 @@ export default {
                         let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.login_api_data/run';
                         try {
                             let resdata = await KustomerRequest({
-                            url: endpoint,
-                            method: 'POST',
-                            body: {
-                                "body": {
-                                "email": isEmail
+                                url: endpoint,
+                                method: 'POST',
+                                body: {
+                                    "body": {
+                                        "email": isEmail
+                                    }
                                 }
-                            }
                             },
-                            (err, response) => {
-                                if (err) {
-                                console.log("Into 1")
-                                return 'Failed to process return'
-                                } else if (response.responseBody.errors) {
-                                console.log("Into 2")
-                                return response.responseBody.errors.message;
+                                (err, response) => {
+                                    if (err) {
+                                    console.log("Into 1")
+                                    return 'Failed to process return'
+                                    } else if (response.responseBody.errors) {
+                                    console.log("Into 2")
+                                    return response.responseBody.errors.message;
+                                    }
                                 }
-                            }
                             );
                             let loginResponse = resdata?.data?.attributes?.responseBody;
                             if (loginResponse?.status === true) {
-                            sessionStorage.setItem('authorAILoggedIn', true);
-                            setLoggedStatus(true);
-                            setApiCall(false)
-                            // settingResponse();
-                            settingBtnAPI()
+                                sessionStorage.setItem('authorAILoggedIn', true);
+                                setLoggedStatus(true);
+                                setApiCall(false)
+                                // settingResponse();
+                                settingBtnAPI()
                             }
                         } catch (err) {
                             console.log("Error in loginBtnAPI::", err)
                         }
                     }
 
-                    const fetchupdatedGlobalConfigApi = async (authorAIInstance_data) => {
+                    const fetchupdatedGlobalConfigApi = async (x_apitoken, x_apikey, authorAIInstance_data) => {
                         try {
                             let endpoint = isAuthuu?.dev_normal_url + "/api/external/getUsecaseConfig/"+authorAIInstance_data[0]?.id;
                             let fetchUpdatedRes = await fetch(endpoint, {
                                 method: "GET",
-                                headers: dev_headers
+                                headers: {
+                                    "x-apitoken": x_apitoken,
+                                    "x-apikey": x_apikey                                    
+                                }    
                             });
 
                             if (!(fetchUpdatedRes.ok)) {
@@ -1763,7 +1764,7 @@ export default {
                                 // const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle } = await generate_auth_client_token(settingRes, isEmail);
                                 // globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);
                                 const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle, authorAIInstance } = await generateTokenApi(settingRes, isEmail, isAuthuu);
-                                fetchupdatedGlobalConfigApi(authorAIInstance);
+                                fetchupdatedGlobalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey, authorAIInstance);
                                 setGenerateToken(
                                 {
                                     authToken: authToken,
@@ -1859,9 +1860,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
-                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
+                                    "X-Authtoken": auto_authToken
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -1921,9 +1920,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
-                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
+                                    "X-Authtoken": auto_authToken
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -2036,9 +2033,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "X-Authtoken": auto_authToken
                                 },
                                 category: {
                                     main_category: preShortcuts?.preShortcutOption?.displayName,
@@ -2303,9 +2298,7 @@ export default {
                                 },
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-Authtoken": generateToken?.authToken,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "X-Authtoken": generateToken?.authToken
                                 },
                                 category: {
                                     main_category: selectionData?.category?.main_category,
@@ -2524,7 +2517,7 @@ export default {
 
                     const dashboardComponent = () => {
                         // let url=isAuthuu?.url_def;
-                        let url="https://dev.democenter.app.taskus.com/chatbot/floatingwidget?authToken=";
+                        let url=isAuthuu?.url_def+"/chatbot/floatingwidget?authToken=";
                         let token = generateToken?.client_authtoken;
                         let end_url='&email='+isEmail+'&clientType=extension';
                         let last_url=url+token+end_url;
