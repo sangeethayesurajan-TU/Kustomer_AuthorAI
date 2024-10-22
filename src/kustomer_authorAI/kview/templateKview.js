@@ -1031,8 +1031,9 @@ export default {
                                 updatedAuth.authtoken = item.attributes.value;
                                 updatedAuth.appId = item.attributes.app;
                             }
-                            if (item.attributes.name === 'url_def') {
+                            if (item.attributes.name === 'dev_normal_url') {
                                 updatedAuth.url_def = item.attributes.value;
+                                console.log("url_def", item.attributes.value)
                                 updatedAuth.appId = item.attributes.app;
                             }
                             if (item.attributes.name === 'dev_normal_url') {
@@ -2524,7 +2525,8 @@ export default {
 
                     const dashboardComponent = () => {
                         // let url=isAuthuu?.url_def;
-                        let url="https://dev.democenter.app.taskus.com/chatbot/floatingwidget?authToken=";
+                        let url=isAuthuu?.url_def+"/chatbot/floatingwidget?authToken=";
+                        console.log("url url url ",isAuthuu)
                         let token = generateToken?.client_authtoken;
                         let end_url='&email='+isEmail+'&clientType=extension';
                         let last_url=url+token+end_url;

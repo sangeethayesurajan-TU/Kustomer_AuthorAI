@@ -10,19 +10,45 @@ let Dev_CF_ACCESS_CLIENT_SECRET = process.env.Dev_CF_ACCESS_CLIENT_SECRET;
 let url_endpoint_orchestrator;
 let url_normal_endpoint;
 
-if (environmet == "dev") {
-    url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
-    url_normal_endpoint = process.env.dev_endpoint
-} else {
-    url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
-    url_normal_endpoint = process.env.prod_endpoint
+function selecting_endpoint(branch_name) {
+    try {
+        switch (branch_name) {
+            case "dev":
+                url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
+                url_normal_endpoint = process.env.dev_endpoint;
+                break;
+            case "uat":
+                url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
+                url_normal_endpoint = process.env.prod_endpoint
+                break;
+            case "prod":
+                url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
+                url_normal_endpoint = process.env.democenter_endpoint
+                break;
+            default:
+                break;
+
+        }
+    } catch (err) {
+        console.log("Error in selecting_endpoint::", err);
+    }
 }
 
-console.log("apikey => ", aapikey, "authtoken ", aauthtoken, "url_endpoint_orchestrator", url_endpoint_orchestrator)
+selecting_endpoint(environmet);
+
+// if (environmet == "dev") {
+//     url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
+//     url_normal_endpoint = process.env.dev_endpoint
+// } else {
+//     url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
+//     url_normal_endpoint = process.env.prod_endpoint
+// }
+
+console.log("apikey => ", aapikey, "authtoken ", aauthtoken, "url_endpoint_orchestrator", url_endpoint_orchestrator, "url_normal_endpoint", url_normal_endpoint);
 
 export default {
     app: "sample_authorai",
-    version: "0.0.150",
+    version: "0.0.159",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -179,35 +205,36 @@ export default {
                 defaultValue: aapikey,
                 description: "External API Key"
             },
-            url_def: {
-                type: "string",
-                defaultValue: "url_def",
-            },
-            dev_apiKey: {
-                type: "secret",
-                defaultValue: x_apikey,
-                description: "External Dev Ex API Key"
-            },
-            dev_apitoken: {
-                type: "secret",
-                defaultValue: x_apitoken,
-                description: "External Dev Ex API Token Key"
-            },
-            cloudFlare_Id: {
-                type: "secret",
-                defaultValue: Dev_CF_ACCESS_CLIENT_ID,
-                description: "External Dev Id Key"
-            },
-            cloudFlare_Secret: {
-                type: "secret",
-                defaultValue: Dev_CF_ACCESS_CLIENT_SECRET,
-                description: "External Dev Token Key"
-            },
             dev_normal_url: {
                 type: "string",
                 defaultValue: url_normal_endpoint,
                 description: "External Dev URL"
-            }
+            },
+            // dev_apiKey: {
+            //     type: "secret",
+            //     defaultValue: x_apikey,
+            //     description: "External Dev Ex API Key"
+            // },
+            // dev_apitoken: {
+            //     type: "secret",
+            //     defaultValue: x_apitoken,
+            //     description: "External Dev Ex API Token Key"
+            // },
+            // cloudFlare_Id: {
+            //     type: "secret",
+            //     defaultValue: Dev_CF_ACCESS_CLIENT_ID,
+            //     description: "External Dev Id Key"
+            // },
+            // cloudFlare_Secret: {
+            //     type: "secret",
+            //     defaultValue: Dev_CF_ACCESS_CLIENT_SECRET,
+            //     description: "External Dev Token Key"
+            // },
+            // dev_normal_url: {
+            //     type: "string",
+            //     defaultValue: url_normal_endpoint,
+            //     description: "External Dev URL"
+            // }
         }
     },
     appDetails: {
