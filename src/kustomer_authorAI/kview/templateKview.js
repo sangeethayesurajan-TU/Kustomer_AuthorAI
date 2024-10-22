@@ -342,7 +342,7 @@ let styledData = `
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding: 15px 10px;
+        padding: 15px 10px 10px;
     } 
 
     .action_items {
@@ -967,7 +967,7 @@ export default {
                             'Kustomer_PromptoGPT_Request_Query_Started',
                             'Success'
                         );
-                        await logsAPI({isAuthuu: isAuthuu, setting_token: setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
+                        await logsAPI({isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
                         try {
                             let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.auto_suggest_api_data/run';
                             let response = await KustomerRequest({
@@ -975,43 +975,45 @@ export default {
                             method: "POST",
                             body: {
                                 "headers": {
-                                "Content-Type": "application/json",
-                                "X-Authtoken": auth_token
+                                    "Content-Type": "application/json",
+                                    "X-Authtoken": auth_token,
+                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
+                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
                                 },
                                 "body": {
-                                "user_id": user_email,
-                                "question": latestmsgfromuser,
-                                "model_type": model_type.toLowerCase(),
-                                "usecase": use_case.toLowerCase(),
-                                "enable_automasking": true
+                                    "user_id": user_email,
+                                    "question": latestmsgfromuser,
+                                    "model_type": model_type.toLowerCase(),
+                                    "usecase": use_case.toLowerCase(),
+                                    "enable_automasking": true
                                 }
                             }
                             },
                             (err, response) => {
                                 if (err) {
-                                console.log("Into 1")
-                                return 'Failed to process return'
+                                    console.log("Into 1")
+                                    return 'Failed to process return'
                                 } else if (response.responseBody.errors) {
-                                console.log("Into 2")
-                                return response.responseBody.errors.message;
+                                    console.log("Into 2")
+                                    return response.responseBody.errors.message;
                                 }
                             }
                             );
                             if (response?.data?.attributes?.responseBody) {
-                            let unique_uuid = generateUUID();
-                            const payload = createPayload(
-                                'Kustomer_PromptoGPT_Request_Query_Completed',
-                                'Success'
-                            );
-                            await logsAPI({ isAuthuu: isAuthuu, setting_token: setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
-                            const payload_query = createPayload(
-                                'Kustomer_PromptoGPT_Request_Query',
-                                'Success'
-                            );
-                            let unique_uuid_query = generateUUID();
-                            await logsAPI({ isAuthuu: isAuthuu, setting_token: setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
-                            setAutoLoading(false);
-                            return response?.data?.attributes?.responseBody;
+                                let unique_uuid = generateUUID();
+                                const payload = createPayload(
+                                    'Kustomer_PromptoGPT_Request_Query_Completed',
+                                    'Success'
+                                );
+                                await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid });
+                                const payload_query = createPayload(
+                                    'Kustomer_PromptoGPT_Request_Query',
+                                    'Success'
+                                );
+                                let unique_uuid_query = generateUUID();
+                                await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: user_setting_infos, PAYLOAD_FOR_EVENT: payload_query, UUID: unique_uuid_query, log_message: latestmsgfromuser });
+                                setAutoLoading(false);
+                                return response?.data?.attributes?.responseBody;
                             }
 
                         } catch (error) {
@@ -1610,7 +1612,7 @@ export default {
 
                     const fetchupdatedGlobalConfigApi = async (authorAIInstance_data) => {
                         try {
-                            let endpoint = isAuthuu?.dev_normal_url + "/api/external/getInstanceUsecaseConfig/"+authorAIInstance_data[1]?.name;
+                            let endpoint = isAuthuu?.dev_normal_url + "/api/external/getUsecaseConfig/"+authorAIInstance_data[0]?.id;
                             let fetchUpdatedRes = await fetch(endpoint, {
                                 method: "GET",
                                 headers: dev_headers
@@ -1629,11 +1631,14 @@ export default {
                                 }
                             };
                             let configRes = data;
+                            let preshortCutArray = configRes?.data?.preShortcuts?.filter(item => item.name !== "TEMPLATE_MENU");
                             console.log("configRes", configRes);
                             configRes?.data?.preShortcuts?.push(custom_prompt);
+                            preshortCutArray?.push(custom_prompt);
                             setPostpreConfig({
                                 postShortcuts: configRes?.data?.postShortcuts,
-                                preShortcuts: configRes?.data?.preShortcuts
+                                // preShortcuts: configRes?.data?.preShortcuts
+                                preShortcuts: preshortCutArray
                             });
                         } catch (err) {
                             console.log("Error in fetchupdatedGlobalConfigApi::", err);
@@ -2381,7 +2386,7 @@ export default {
                                                 }
                                                 <>
                                                     <div id="spinner_bounce" style={{ display: "block" }}>
-                                                        <div className="spinner_bounce" style={{ padding: "15px" }}>
+                                                        <div className="spinner_bounce" style={{ padding: "0px 15px" }}>
                                                             <div className="bounce1"></div>
                                                             <div className="bounce2"></div>
                                                             <div className="bounce3"></div>

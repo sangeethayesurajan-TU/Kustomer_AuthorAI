@@ -22,7 +22,7 @@ console.log("apikey => ", aapikey, "authtoken ", aauthtoken, "url_endpoint_orche
 
 export default {
     app: "sample_authorai",
-    version: "0.0.147",
+    version: "0.0.148",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
