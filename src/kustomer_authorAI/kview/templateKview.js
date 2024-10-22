@@ -2524,7 +2524,7 @@ export default {
 
                     const dashboardComponent = () => {
                         // let url=isAuthuu?.url_def;
-                        let url="https://taskgpt-access.taskus.com/chatbot/floatingwidget?authToken=";
+                        let url="https://dev.democenter.app.taskus.com/chatbot/floatingwidget?authToken=";
                         let token = generateToken?.client_authtoken;
                         let end_url='&email='+isEmail+'&clientType=extension';
                         let last_url=url+token+end_url;
