@@ -2746,13 +2746,7 @@ export default {
                                 </>
                             
                             }
-                            {footerPart()}
-                            <button
-                                onClick={() => getTemplateLists()}
-                                // onClick={() => getDevTemplateList()}
-                            >
-                                Click me
-                            </button>
+                            {footerPart()}                            
                             <style>{${styleSection}}</style>
                         </div>
                     )
