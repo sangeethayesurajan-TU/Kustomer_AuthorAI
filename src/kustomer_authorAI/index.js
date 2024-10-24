@@ -1,8 +1,10 @@
 import kview from "./kview";
 
 let environmet = "dev";
-const aapikey = process.env.aapikey;
-const aauthtoken = process.env.aauthtoken;
+// let aapikey = process.env.aapikey;
+// let aauthtoken = process.env.aauthtoken;
+let aapikey;
+let aauthtoken;
 let x_apikey = process.env.x_Dev_apiKey;
 let x_apitoken = process.env.x_Dev_apitoken;
 let Dev_CF_ACCESS_CLIENT_ID = process.env.Dev_CF_ACCESS_CLIENT_ID;
@@ -10,20 +12,29 @@ let Dev_CF_ACCESS_CLIENT_SECRET = process.env.Dev_CF_ACCESS_CLIENT_SECRET;
 let url_endpoint_orchestrator;
 let url_normal_endpoint;
 
+// const dev_aapikey="promptogpt4512_@#$&&##$customerdev";
+// const dev_aapiToken="42107beb68c44cd0b61018518bb55b675b27a7c0cf703e646fefe06b8456e4f5"
+
 function selecting_endpoint(branch_name) {
     try {
         switch (branch_name) {
             case "dev":
                 url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
                 url_normal_endpoint = process.env.dev_endpoint;
+                aapikey=process.env.dev_aapikey;
+                aauthtoken= process.env.dev_aapiToken;
                 break;
             case "uat":
                 url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
-                url_normal_endpoint = process.env.prod_endpoint
+                url_normal_endpoint = process.env.prod_endpoint;
+                aapikey=process.env.aapikey;
+                aauthtoken= process.env.aauthtoken;
                 break;
             case "prod":
                 url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
-                url_normal_endpoint = process.env.democenter_endpoint
+                url_normal_endpoint = process.env.democenter_endpoint;
+                aapikey=process.env.aapikey;
+                aauthtoken= process.env.aauthtoken;
                 break;
             default:
                 break;
@@ -36,19 +47,9 @@ function selecting_endpoint(branch_name) {
 
 selecting_endpoint(environmet);
 
-// if (environmet == "dev") {
-//     url_endpoint_orchestrator = process.env.dev_portal_orchestrator;
-//     url_normal_endpoint = process.env.dev_endpoint
-// } else {
-//     url_endpoint_orchestrator = process.env.prod_portal_orchestrator;
-//     url_normal_endpoint = process.env.prod_endpoint
-// }
-
-console.log("apikey => ", aapikey, "authtoken ", aauthtoken, "url_endpoint_orchestrator", url_endpoint_orchestrator, "url_normal_endpoint", url_normal_endpoint);
-
 export default {
     app: "sample_authorai",
-    version: "0.0.160",
+    version: "0.0.172",
     description: "Author AI is used to make summarry from the selected text",
     commands: [
         {
@@ -82,16 +83,16 @@ export default {
         {
             name: "login_api_data",
             displayName: "Loginres",
-            url: "https://orchestrator.taskus.com/api/settings/usercheck?app=PromptoGPT",
-            // url: url_endpoint + "" + "/api/settings/usercheck?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/settings/usercheck?app=PromptoGPT",
+            url: url_endpoint_orchestrator + "" + "/api/settings/usercheck?app=PromptoGPT",
             cacheSeconds: 15,
             httpMethod: "post",
         },
         {
             name: "setting_api_data",
             displayName: "Settingresponse",
-            url: "https://orchestrator.taskus.com/api/settings/get?app=PromptoGPT",
-            // url: url_endpoint + "" + "/api/settings/get?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/settings/get?app=PromptoGPT",
+            url: url_endpoint_orchestrator + "" + "/api/settings/get?app=PromptoGPT",
             cacheSeconds: 15,
             httpMethod: "post",
             appSettings: {
@@ -129,14 +130,16 @@ export default {
         {
             name: "exhealth_check_api",
             displayName: "Exhealth Api",
-            url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
+            // url: "https://orchestrator.taskus.com/api/settings/6/exthealth",
+            url: url_endpoint_orchestrator + "" + "/api/settings/6/exthealth",
             cacheSeconds: 15,
             httpMethod: "post"
         },
         {
             name: "refresh_token",
             displayName: "Refresh Api",
-            url: "https://orchestrator.taskus.com/api/user/refreshToken",
+            // url: "https://orchestrator.taskus.com/api/user/refreshToken",
+            url: url_endpoint_orchestrator + "" + "/api/user/refreshToken",
             cacheSeconds: 15,
             httpMethod: "post"
         },
@@ -149,49 +152,22 @@ export default {
         {
             name: "logs_api_data",
             displayName: "logsapires",
-            url: "https://orchestrator.taskus.com/api/event/create?app=PromptoGPT",
+            // url: "https://orchestrator.taskus.com/api/event/create?app=PromptoGPT",
+            url: url_endpoint_orchestrator + "" + "/api/event/create?app=PromptoGPT",
             httpMethod: "post"
         },
+        
         // {
         //     name: "sample_query",
         //     displayName: "querysample",
-        //     // inputSchema: {},
-        //     // type: "external-api",
-        //     permittedUrlArgs: ["instanceId"],
-        //     // url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/:instanceId"
-        //     url: "http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/{{{instanceId}}}",
-        //     // httpMethod: "post",
+        //     inputSchema: {},
+        //     type: "external-api",
+        //     permittedArgs: ["instanceId"],
+        //     // permittedArgs: ["apitokenval", "apikeyval", "cfaccessclientidval", "cfacccessclientsecretval"],
+        //     url: "http://dev.democenter.app.taskus.com/api/external/getTemplateList/{{{instanceId}}}",
         //     httpMethod: "post",
-        //     cacheSeconds: 15,
-        //     // auditLogging: true,
-        //     inputSchema: {
-        //         instanceId: {
-        //             type: "string",
-        //             description: "The ID of the instance to fetch details for"
-        //         }
-        //     },
-        //     // inputSchema: {
-        //     //     "type": "object",
-        //     //     "properties": {
-        //     //         "instanceId": {
-        //     //             "type": "string"
-        //     //         }
-        //     //     }
-
-        //     // },            
-
+        //     cacheSeconds: 15
         // }
-        {
-            name: "sample_query",
-            displayName: "querysample",
-            inputSchema: {},
-            type: "external-api",
-            permittedArgs: ["instanceId"],
-            // permittedArgs: ["apitokenval", "apikeyval", "cfaccessclientidval", "cfacccessclientsecretval"],
-            url: "http://dev.democenter.app.taskus.com/api/external/getTemplateList/{{{instanceId}}}",
-            httpMethod: "post",
-            cacheSeconds: 15
-        }
     ],
     settings: {
         default: {

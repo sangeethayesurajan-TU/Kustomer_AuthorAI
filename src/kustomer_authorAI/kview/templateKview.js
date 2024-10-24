@@ -585,7 +585,9 @@ export default {
                     body: {
                     "headers": {
                         "Authorization": auth,
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "CF-ACCESS-CLIENT-ID":"57cf23a5470bb331979b5353e2205b25.access",
+                        "CF-ACCESS-CLIENT-SECRET":"ca8fe3e2ae9569d1944b09e583a7dd5a181359dc3f18d2f1c3814225f1f76813"
                     },
                     "body": {
                         "user_email": user_setting.email,
@@ -674,8 +676,6 @@ export default {
                         selected_writing_style: "professional"
                     });
 
-                    console.log("Template Kview Main Data ::", selectedText);
-
                     function generateUUID() {
                         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                             const r = (Math.random() * 16) | 0;
@@ -686,15 +686,12 @@ export default {
 
                     async function getDevTemplateList() {
                         let endpoint = "https://dev.democenter.app.taskus.com/api/external/getTemplateList/1";
-                        console.log("endpoint endpoint ::", endpoint);
                         try {                    
                             let response = await fetch(endpoint, {
                                 method: "POST",
                                 headers: {
                                     "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTc3LCJ1c2VyX25hbWUiOiJzYW5nZWV0aGEueWVzdXJhamFuQHRhc2t1cy5jb20iLCJlbWFpbCI6InNhbmdlZXRoYS55ZXN1cmFqYW5AdGFza3VzLmNvbSIsIm5hbWUiOiJTYW5nZWV0aGEgWWVzdXJhamFuIiwic3RhdHVzIjp0cnVlLCJpc19zdXBlckFkbWluIjpmYWxzZSwiaWF0IjoxNzI5MTQyODk4LCJleHAiOjE3MjkxNDg1OTh9.SlLP9c32ICMCvpw1OLNDuowv5tEPUHSSSRTUUZV_HFA",
                                     "content-type": "application/json",
-                                    "x-apikey": "taskgptdev",
-                                    "x-apitoken": "3088aa1db778d372f221e5651c331034c7fd7c703ebd3e54f197d3542ff446b4",
                                     "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
                                     "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
                                 },                        
@@ -711,7 +708,6 @@ export default {
                                 throw new Error('Http error status', response?.status, response);
                             } 
                             let templateListData = await response.json();
-                            console.log("templateListData templateListData ", templateListData)
                         } catch (err) {
                             console.log("Error in getTemplateList::", err);
                         }
@@ -734,17 +730,17 @@ export default {
                             url: endpoint,
                             method: 'POST',
                             body: {
-                            // "headers": {
-                            //     "Content-Type": "application/json",
-                            //     "x-apitoken": apitoken,
-                            //     "x-apikey": apikey,
-                            //     "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
-                            //     "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
-                            // },
-                            headers: dev_headers,
-                            "body": {
-                                "email": emailId
-                            }
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "x-apitoken": apitoken,
+                                    "x-apikey": apikey,
+                                    "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
+                                    "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
+                                },
+                                // headers: dev_headers,
+                                "body": {
+                                    "email": emailId
+                                }
                             }
                         },
                             (err, response) => {
@@ -837,7 +833,6 @@ export default {
                                 }
                             }, (err, res) => {
                                 if (err) {
-                                    console.log("Into exhealth Error ", err)
                                     return 'Failed to process return'
                                 } else if (response.responseBody.errors) {
                                     return response.responseBody.errors.message;
@@ -845,7 +840,6 @@ export default {
                             }
                             );
                             if (prompRes?.data?.attributes?.responseBody) {
-                                console.log("prompRes Response ::", prompRes?.data?.attributes?.responseBody?.data[0])
                                 setPreShortcuts({
                                     ...preShortcuts,
                                     temp_json: prompRes?.data?.attributes?.responseBody?.data[0]?.jsonValue
@@ -860,7 +854,7 @@ export default {
                     const highlightHeadings = (text) => {
                         // Ensure the input is a string
                         if (typeof text !== 'string') {
-                            console.error('Expected a string but got:', typeof text);
+                            
                             return null; // Or return an empty fragment
                         }
 
@@ -914,7 +908,7 @@ export default {
                                 );
                                 let res_msg = "Received the API response - " + response?.data?.attributes?.responseBody?.answer;
                                 await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload_completed, UUID: unique_uuid_complete, log_message: res_msg });
-                                console.log(" payload payload ", response?.data?.attributes?.responseBody)
+                                
                                 setAutoLoading(false);
                                 setSelectedText('');
                                 setTextArea('');
@@ -929,7 +923,6 @@ export default {
                                 } else {
                                     formattedResponseData = response?.data?.attributes?.responseBody?.answer;
                                 }
-                                console.log("formattedResponse formattedResponse ", formattedResponseData)
                                 // let useCaseOption = findUseCaseOption(response?.data?.attributes?.responseBody);
                                 setPostpreConfig({
                                     ...postpreConfig,
@@ -944,11 +937,10 @@ export default {
                                 let originalData = response?.data?.attributes?.responseBody?.answer;
                                 let showText = payload.body?.question;
                                 let res_useCase_option = {
-                                    usecase: payload?.body?.useCase,
+                                    usecase: payload?.body?.usecase,
                                     useCaseOption: payload?.body?.usecase_options
                                 }
                                 let category = payload?.category;
-                                console.log("res_useCase_option ::", res_useCase_option, category);
                                 setSelections((prevSelections) => [
                                     ...prevSelections,
                                     { showText, formattedResponseData, originalData, res_useCase_option, category }
@@ -977,8 +969,8 @@ export default {
                                 "headers": {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": auth_token,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "CF-ACCESS-CLIENT-ID": settingreg?.CF_Access_Client_Id,
+                                    "CF-ACCESS-CLIENT-SECRET": settingreg?.CF_Access_Client_Secret
                                 },
                                 "body": {
                                     "user_id": user_email,
@@ -1033,7 +1025,6 @@ export default {
                             }
                             if (item.attributes.name === 'dev_normal_url') {
                                 updatedAuth.url_def = item.attributes.value;
-                                console.log("url_def", item.attributes.value)
                                 updatedAuth.appId = item.attributes.app;
                             }
                             if (item.attributes.name === 'dev_normal_url') {
@@ -1101,7 +1092,9 @@ export default {
                                 method: "POST",
                                 headers: {
                                     'Authorization': token,
-                                    "Content-Type": "application/json"
+                                    "Content-Type": "application/json",
+                                    "CF-ACCESS-CLIENT-ID":"57cf23a5470bb331979b5353e2205b25.access",
+                                    "CF-ACCESS-CLIENT-SECRET":"ca8fe3e2ae9569d1944b09e583a7dd5a181359dc3f18d2f1c3814225f1f76813"
                                 }
                             },
                                 (err, response) => {
@@ -1183,7 +1176,7 @@ export default {
                                     promptoWritingStyleOptions: promptResponse?.data[0]?.jsonValue?.writing_style,
                                     shownforTemplate: promptResponse?.data[0]?.jsonValue?.body
                                 })
-                                console.log("promptResponse promptResponse ", promptResponse, promptResponse?.data[0]?.jsonValue)
+                               
                             } catch (err) {
                                 console.log("Error in dataPrompt::", err);
                             }
@@ -1197,7 +1190,6 @@ export default {
                     useEffect(() => {
 
                         if (isLoggedStatus && isSettingStatus) {
-                            console.log(" AAA ");
                             let pendingClick = 0;
 
                             const handleSelection = () => {
@@ -1208,7 +1200,6 @@ export default {
                                     setSelectedText(selectedText);
                                     setSelecting(true);
                                     setPostShortcutLoading(false);
-                                    console.log('Text selected:', selectedText);
                                 } else {
                                     // setSelecting(false);
                                 }
@@ -1245,7 +1236,6 @@ export default {
                                         clearTimeout(pendingClick);
                                         const selection = window.getSelection();
                                         const selectedText = selection.toString().trim();
-                                        console.log(" AAA ", selectedText);
                                         setTextArea('');
                                         setPostOrPreOnloading({
                                             postOnloading: false,
@@ -1267,7 +1257,7 @@ export default {
                                             );
                                             logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, log_message: logMsg });
 
-                                            console.log('Double click - text selected:', selectedText);
+                                            console.log('Double click - text selected:');
                                         }
                                         else {
                                             console.log("Into this one Double")
@@ -1303,7 +1293,7 @@ export default {
                                     );
                                     logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, log_message: logMsg });
 
-                                    console.log('Mouse selection - text selected:', selectedText);
+                                    console.log('Mouse selection - text selected:');
                                 } else {
                                     // setSelecting(false);
                                     // setSelectedText('');
@@ -1376,8 +1366,7 @@ export default {
                     useEffect(() => {
                     }, [isSelecting, selectedText, postpreConfig, postOrPreOnloading, isEmail, isAutoLoading, preShortcuts, promptoRes, toneWriting]);
 
-                    console.log("promptoRes data :: ", promptoRes)
-
+                    
                     async function findLastResponse(result) {
                         try {
                             {
@@ -1583,8 +1572,12 @@ export default {
                             url: endpoint,
                             method: 'POST',
                             body: {
+                                "headers": {
+                                    "CF-ACCESS-CLIENT-ID":"57cf23a5470bb331979b5353e2205b25.access",
+                                    "CF-ACCESS-CLIENT-SECRET":"ca8fe3e2ae9569d1944b09e583a7dd5a181359dc3f18d2f1c3814225f1f76813"
+                                },
                                 "body": {
-                                "email": isEmail
+                                    "email": isEmail
                                 }
                             }
                             },
@@ -1611,19 +1604,25 @@ export default {
                         }
                     }
 
-                    const fetchupdatedGlobalConfigApi = async (authorAIInstance_data) => {
+                    const fetchupdatedGlobalConfigApi = async (user_setting_response, apitoken, apikey, authorAIInstance_data) => {
                         try {
                             let endpoint = isAuthuu?.dev_normal_url + "/api/external/getUsecaseConfig/"+authorAIInstance_data[0]?.id;
                             let fetchUpdatedRes = await fetch(endpoint, {
                                 method: "GET",
-                                headers: dev_headers
+                                // headers: dev_headers
+                                "headers": {
+                                    // "Content-Type": "application/json",
+                                    "x-apitoken": apitoken,
+                                    "x-apikey": apikey,
+                                    "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
+                                    "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
+                                },
                             });
 
                             if (!(fetchUpdatedRes.ok)) {
                                 throw new Error("HTTP error! status:", fetchUpdatedRes?.status)
                             }
                             const data = await fetchUpdatedRes.json();
-                            console.log("fetchupdatedGlobalConfigApi ::", endpoint, data);
                             let custom_prompt = {
                                 displayName: "Write a Custom Prompt",
                                 name: "custom_prompt",
@@ -1633,7 +1632,6 @@ export default {
                             };
                             let configRes = data;
                             let preshortCutArray = configRes?.data?.preShortcuts?.filter(item => item.name !== "TEMPLATE_MENU");
-                            console.log("configRes", configRes);
                             configRes?.data?.preShortcuts?.push(custom_prompt);
                             preshortCutArray?.push(custom_prompt);
                             setPostpreConfig({
@@ -1666,7 +1664,6 @@ export default {
                                     }
                                 }
                             );
-                            console.log("updatedResponse ",updatedResponse)
                         } catch (error) {
                             console.log("Error in updatedGlobalConfigApi::", error)
                         }
@@ -1675,7 +1672,6 @@ export default {
                     const globalConfigApi = async (x_apitoken, x_apikey) => {
                         try {
                             let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.global_config_api/run';
-                            console.log("endpoint ", endpoint);
                             let response = await KustomerRequest({
                                 url: endpoint,
                                 method: 'POST',                            
@@ -1699,7 +1695,6 @@ export default {
                                 }
                             };
                             let configRes = response?.data?.attributes?.responseBody;
-                            console.log("configRes", configRes);
                             configRes?.data?.preShortcuts?.push(custom_prompt);
                             setPostpreConfig({
                                 postShortcuts: configRes?.data?.postShortcuts,
@@ -1722,7 +1717,9 @@ export default {
                                         "X-ApiToken": "{{{aauthtoken}}}",
                                         "X-ApiKey": "{{{aapikey}}}",
                                         "Accept": "application/json",
-                                        "Content-Type": "application/json"
+                                        "Content-Type": "application/json",
+                                        "CF-ACCESS-CLIENT-ID":"57cf23a5470bb331979b5353e2205b25.access",
+                                        "CF-ACCESS-CLIENT-SECRET":"ca8fe3e2ae9569d1944b09e583a7dd5a181359dc3f18d2f1c3814225f1f76813"
                                     },
                                     "body": {
                                         "email": isEmail
@@ -1751,7 +1748,9 @@ export default {
                                 setSettingreg({
                                     refreshToken: settingRes?.refresh_token,
                                     settingResponse: settingRes,
-                                    setting_token: settingRes?.authToken
+                                    setting_token: settingRes?.authToken,
+                                    CF_Access_Client_Id: settingRes?.settings?.CF_Access_Client_Id,
+                                    CF_Access_Client_Secret: settingRes?.settings?.CF_Access_Client_Secret
                                 });
                                 // setSettingreg(settingRes);
                                 // setLoading(false);
@@ -1764,7 +1763,7 @@ export default {
                                 // const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle } = await generate_auth_client_token(settingRes, isEmail);
                                 // globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);
                                 const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle, authorAIInstance } = await generateTokenApi(settingRes, isEmail, isAuthuu);
-                                fetchupdatedGlobalConfigApi(authorAIInstance);
+                                fetchupdatedGlobalConfigApi(settingRes, settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey, authorAIInstance);
                                 setGenerateToken(
                                 {
                                     authToken: authToken,
@@ -1827,7 +1826,6 @@ export default {
                     const post_sub_category_items = async (e, item, sub_category, index) => {
                         try {
                             e.stopPropagation();
-                            console.log("stopPropagation ", sub_category);
                             setPostShortcutLoading(true);
                             let textData;
                             if (postOrPreOnloading?.postOnloading) {
@@ -1836,7 +1834,6 @@ export default {
                                 textData = textArea ? textArea : selectedText;
                             }
 
-                            console.log("generateToken sub generateToken::", generateToken)
                             let auto_authToken;
                             let model_type;
                             if (generateToken?.authToken || generateToken?.model_type) {
@@ -1861,8 +1858,8 @@ export default {
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
-                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
+                                    "CF-ACCESS-CLIENT-ID": settingreg?.CF_Access_Client_Id,
+                                    "CF-ACCESS-CLIENT-SECRET": settingreg?.CF_Access_Client_Secret
                                 },
                                 category: {
                                     main_category: item?.displayName,
@@ -1872,7 +1869,6 @@ export default {
                             if (sub_category?.useCaseOption) {
                                 payload.body['usecase_options'] = sub_category?.useCaseOption?.aiName
                             }
-                            console.log("PAYLOAD PAYLOAD ::", payload);
                             let unique_uuid = generateUUID();
                             const log_payload = createPayload(
                                 'Kustomer_AuthorAI_Post_Category_Clicked',
@@ -1898,7 +1894,6 @@ export default {
 
                             setPostShortcutLoading(true);
 
-                            console.log("generateToken main generateToken::", generateToken)
                             let auto_authToken;
                             let model_type;
                             if (generateToken?.authToken || generateToken?.model_type) {
@@ -1915,7 +1910,7 @@ export default {
                                     "application_name": "TaskScribe",
                                     "model_type": model_type,
                                     // "usecase": item?.useCase?.aiName,
-                                    useCase: item?.prompt,
+                                    usecase: item?.prompt,
                                     "question": textData,
                                     "user_id": isEmail,
                                     // "enable_automasking": true
@@ -1935,7 +1930,6 @@ export default {
                             if (item?.useCaseOption) {
                                 payload.body['usecase_options'] = item?.useCaseOption?.aiName
                             }
-                            console.log("PAYLOAD PAYLOAD ::", payload);
                             let unique_uuid = generateUUID();
                             const log_payload = createPayload(
                                 'Kustomer_AuthorAI_Post_Category_Clicked',
@@ -2003,7 +1997,6 @@ export default {
                                     preOnloading: false
                                 })
                             }
-                            console.log("sangeeetha")
                             setTextArea(e.target.value);
                             setSelecting(true);
                             setSelectedText('');
@@ -2014,7 +2007,6 @@ export default {
 
                     const enteredTextAreas = async () => {
                         try {
-                            console.log("enteredTextAreas preShortcuts", preShortcuts);
                             let auto_authToken;
                             let model_type;
                             if (generateToken?.authToken || generateToken?.model_type) {
@@ -2025,7 +2017,6 @@ export default {
                                 auto_authToken = data?.authToken;
                                 model_type = data?.model_type
                             }
-                            console.log("enteredTextAreas ", auto_authToken, model_type)
                             let payload = {
                                 body: {
                                     "application_name": "TaskScribe",
@@ -2038,8 +2029,8 @@ export default {
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "CF-ACCESS-CLIENT-ID": settingreg?.CF_Access_Client_Id,
+                                    "CF-ACCESS-CLIENT-SECRET": settingreg?.CF_Access_Client_Secret
                                 },
                                 category: {
                                     main_category: preShortcuts?.preShortcutOption?.displayName,
@@ -2056,7 +2047,6 @@ export default {
                                     writing_style: toneWriting?.selected_writing_style
                                 }
                             }
-                            console.log("PAYLOAD PAYLOAD ::", payload);
                             postPreAutoSuggestApi(payload, isAuthuu)
                         } catch (err) {
                             console.log("Error in enteredTextAreas::", err);
@@ -2176,7 +2166,7 @@ export default {
                                 setPreShortcuts({
                                     ...preShortcuts,
                                     preOnloading: false,
-                                    preShortcutOption: { displayName: promptoRes?.shownforTemplate, name: pre_object?.name, useCase: { aiName: pre_object?.useCase?.aiName } }
+                                    preShortcutOption: { displayName: promptoRes?.shownforTemplate, name: pre_object?.name, usecase: { aiName: pre_object?.useCase?.aiName } }
                                 });
                             } else {
                                 setPreShortcuts({
@@ -2290,7 +2280,6 @@ export default {
 
                     const reloadFunc = async (selectionData, index) => {
                         try {
-                            console.log("reloadFunc ::", selectionData, index);
                             setPostShortcutLoading(true);
 
                             let payload = {
@@ -2305,8 +2294,8 @@ export default {
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": generateToken?.authToken,
-                                    "CF-ACCESS-CLIENT-ID": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-ACCESS-CLIENT-SECRET": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
+                                    "CF-ACCESS-CLIENT-ID": settingreg?.CF_Access_Client_Id,
+                                    "CF-ACCESS-CLIENT-SECRET": settingreg?.CF_Access_Client_Secret
                                 },
                                 category: {
                                     main_category: selectionData?.category?.main_category,
@@ -2317,7 +2306,6 @@ export default {
                             if (selectionData?.res_useCase_option?.useCaseOption) {
                                 payload.body['usecase_options'] = selectionData?.res_useCase_option?.useCaseOption
                             }
-                            console.log("Reload Function PAYLOAD ::", payload);
                             let unique_uuid = generateUUID();
                             const log_payload = createPayload(
                                 'Kustomer_AuthorAI_Reload_Option_Clicked',
@@ -2426,7 +2414,6 @@ export default {
 
                     const selectingAI = async (type) => {
                         try {
-                            console.log("TYPE TYPE ::", type);
                             setCheckboxType(type)
                             if (type === 'promptogpt') {
                                 const payload = createPayload(
@@ -2463,7 +2450,6 @@ export default {
                     }
 
                     const middlePart = () => {
-                        console.log("((lastUserRes === 'Agent') || (channelType === 'email'))", ((lastUserRes === 'Agent') || (channelType === "email")))
                         return (
                             <>
                                 {(isSettingStatus) && (generateToken?.promptoGPT_toggle || generateToken?.knowledgeAssist_toggle || generateToken?.authorAI_toggle) ?
@@ -2526,7 +2512,6 @@ export default {
                     const dashboardComponent = () => {
                         // let url=isAuthuu?.url_def;
                         let url=isAuthuu?.url_def+"/chatbot/floatingwidget?authToken=";
-                        console.log("url url url ",isAuthuu)
                         let token = generateToken?.client_authtoken;
                         let end_url='&email='+isEmail+'&clientType=extension';
                         let last_url=url+token+end_url;
@@ -2692,47 +2677,7 @@ export default {
                             <p>Version: 1.0.0 | TaskUs @ {currentYear} | <a style={{color: "#005EFF", textDecoration: "underline"}} href="https://www.taskus.com/security/" target="_blank">Security</a></p>
                             </div>
                         )
-                    }
-
-                    async function getCommandTemplateLists() {
-                        try {
-                            let instanceId = "1";
-                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.sample_query/run';     
-                            // let endpoint = http://dev.democenter.app.taskus.com/api/external/getTemplateDetails/1;                         
-                            let responseData = await KustomerRequest({
-                                url: endpoint,
-                                method: 'POST',
-                                // method: 'GET',
-                                
-                                body: {
-                                    "body": {
-                                        "page": 1,
-                                        "take": 10,
-                                        "searchBy": "",
-                                        "filterBy": ""
-                                    },
-                                    "args": { instanceId }
-                                }
-
-                            },
-                                (err, response) => {
-                                    if (err) {
-                                        console.log("Into Args 1")
-                                        return 'Failed to process return'
-                                    } else if (response.responseBody.errors) {
-                                        console.log("Into Args 2")
-                                        return response.responseBody.errors.message;
-                                    }
-                                }
-                            );
-
-                            let data = responseData?.data?.attributes?.responseBody;
-                            console.log("getCommandTemplateLists ", data)
-
-                        } catch (err) {
-                            console.log("Error in getCommandTemplateLists::", err);
-                        }
-                    }
+                    }                    
 
                     return (
                         // <div style={{padding: "10px"}}>
