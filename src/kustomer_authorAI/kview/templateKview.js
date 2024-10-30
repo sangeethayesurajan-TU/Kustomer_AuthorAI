@@ -2095,7 +2095,7 @@ export default {
                                             value={textArea}
                                             // readOnly={!(userLang?.trim())}
                                             className={'textarea_input'}
-                                            placeholder={'Write/Select any text...'}
+                                            placeholder={(postpreConfig?.postShortcuts?.length > 0)?'Write/Select any text...': 'Write any text...'}
                                             onChange={handleReplyTextArea}
                                             onFocus={() => setPreShortcuts({
                                                 ...preShortcuts,
@@ -2192,8 +2192,20 @@ export default {
                     const post_pre_select_box = () => {
                         return (
                             <>
-                                {!(postShortcutLoading) && <div className={'postShortcutLoadingv'}>{post_shortcut_content()}</div>}
-                                {(preShortcuts?.preOnloading) && <div className={'preShortcutLoadingv'}>{pre_shortcut_content()}</div>}
+                                {postpreConfig?.postShortcuts?.length > 0 ?
+                                    <>
+                                        {!(postShortcutLoading) && <div className={'postShortcutLoadingv'}>{post_shortcut_content()}</div>}
+                                    </>
+                                    :
+                                    <></>
+                                }
+                                {(postpreConfig?.preShortcuts?.length > 0) ?
+                                    <>
+                                        {(preShortcuts?.preOnloading) && <div className={'preShortcutLoadingv'}>{pre_shortcut_content()}</div>}
+                                    </>
+                                    :
+                                    <></>
+                                }
                             </>
                         )
                     }
@@ -2378,15 +2390,22 @@ export default {
                                     </>                              
                                 </div> 
                                 {(selectedText) &&
-                                    <div className={'selected_txt_post_blog'}>
-                                        <div className={'st_response'}>
-                                            <div className={'select_text_heading'}>Selected Text</div>
-                                            {/* <div className={'query'}>{selectedText}</div> */}
+                                    <>
+                                        {(postpreConfig?.postShortcuts?.length > 0) ?
+                                            <div className={'selected_txt_post_blog'}>
+                                                <div className={'st_response'}>
+                                                    <div className={'select_text_heading'}>Selected Text</div>
+                                                    {/* <div className={'query'}>{selectedText}</div> */}
 
-                                            <div className={'query'}>{selectedText}</div>
+                                                    <div className={'query'}>{selectedText}</div>
 
-                                        </div>
-                                    </div>
+                                                </div>
+                                            </div>
+                                            :
+                                            <></>
+                                        }
+
+                                    </>
                                 }
                                 {((selectedText != "") || (textArea !== "") || (textArea == "") || (postOrPreOnloading?.textData)) && post_pre_select_box()}
                             </>
