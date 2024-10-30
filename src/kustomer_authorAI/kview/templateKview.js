@@ -47,6 +47,15 @@ const disliked_thumbs_down = `<svg width="24" height="24" viewBox="0 0 24 24" fi
 </svg>
 `;
 
+const dropdown = `<svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1.06436 0.751374C1.53299 0.282745 2.29279 0.282745 2.76142 0.751374L6.71289 4.70285L10.6644 0.751374C11.133 0.282745 11.8928 0.282745 12.3614 0.751374C12.83 1.22 12.83 1.9798 12.3614 2.44843L7.56142 7.24843C7.09279 7.71706 6.33299 7.71706 5.86436 7.24843L1.06436 2.44843C0.595733 1.9798 0.595733 1.22 1.06436 0.751374Z" fill="#8217FF"/>
+</svg>
+`;
+const dropup = `<svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.3614 7.59999C11.8928 8.06862 11.133 8.06862 10.6644 7.59999L6.71289 3.64852L2.76142 7.59999C2.29279 8.06862 1.53299 8.06862 1.06436 7.59999C0.595733 7.13136 0.595733 6.37157 1.06436 5.90294L5.86436 1.10294C6.33299 0.634307 7.09279 0.634308 7.56142 1.10294L12.3614 5.90294C12.83 6.37157 12.83 7.13137 12.3614 7.59999Z" fill="#8217FF"/>
+</svg>
+`;
+
 
 let styledData = `
   .actionBtn{
@@ -194,6 +203,9 @@ let styledData = `
         justify-content: space-between;
         align-items: center;
         cursor: default;
+        /*display: grid;
+        column-gap: 27px;*/
+        grid-template-columns: auto auto;
     }
 
     .ps_single_item:first-child {
@@ -208,8 +220,8 @@ let styledData = `
 
     .ps_single_item:hover {
         border-bottom: 1px solid #F2F2F2;
-        display: flex;
-        padding: 12px 7px;
+        /*display: flex;*/
+        padding: 12px 6px;
         justify-content: space-between;
         align-items: center;
         background-color: #F3E8FF;
@@ -243,25 +255,35 @@ let styledData = `
     }
 
     .post_shortcut_subcategory {
-        display: flex;
+        /*display: flex;*/
         align-items: center;
         gap: 4px;
+        /*display: grid;*/
+        column-gap: 10px;
+        grid-template-columns: auto auto;
+        align-items: center;
     }
 
     .ps_subcategory_item {
         color: #282829;
         font-weight: 500;
         border: 1px solid #282829;
-        border-radius: 16px;
+        border-radius: 5px;
         padding: 4px 8px;
+        width: 100%;
+        /* height: 100%; */
+        text-align: center;
     }
 
     .ps_subcategory_item:hover {
         color: #8217FF;
         font-weight: 500;
         border: 1px solid #8217FF;
-        border-radius: 16px;
+        border-radius: 5px;
         padding: 4px 8px;
+        width: 100%;
+        /* height: 100%; */
+        text-align: center;
     }
 
     .ps_main_list_names {
@@ -325,7 +347,8 @@ let styledData = `
     .select_text_heading {
         color: #8217FF;
         background: #F3E8FF;
-        width: 40%;
+        /* width: 40%; */
+        width: 100%;
         padding: 4px;
         border-radius: 4px;
         /*text-align: center;*/
@@ -539,6 +562,52 @@ let styledData = `
         cursor: not-allowed;
     }
 
+    .dropdown-container {
+        position: relative;
+        width: 150px; /* Adjust as needed */
+    }
+
+    .dropdown-selected {
+        padding: 10px;
+        /* border: 1px solid #ccc; */
+        border: 1px solid #8217FF;
+        cursor: pointer;
+        background-color: #fff;
+        /*border-radius: 5px;*/
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        display: flex;
+        gap: 10px;
+        align-items: center
+    }
+
+    .dropdown-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        z-index: 1000;
+        border: 1px solid #8217FF;
+    }
+
+    .dropdown-option {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #F3E8FF;
+    }
+
+    .dropdown-option:last-child {
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .dropdown-option:hover {
+        background-color: #F3E8FF;
+    }
+
+
 `
 let styleSection = `\`${styledData}\``;
 let instance_key = process.env.x_Dev_apiKey;
@@ -560,19 +629,7 @@ export default {
                     event: action,
                 },
                 ];
-            };
-
-            let instance_key = "${instance_key}";
-            let instance_t = "${instance_t}";
-            let client_id = "${client_id}";
-            let client_sec = "${client_sec}";
-
-            let dev_headers = {
-                "x-apikey": "${instance_key}",
-                "x-apitoken": "${instance_t}",
-                "CF-ACCESS-CLIENT-ID": "${client_id}",
-                "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
-            }            
+            };         
                 
             async function logsAPI({ isAuthuu, setting_token, user_setting, PAYLOAD_FOR_EVENT, UUID = null, log_message = null }) {
                 let app_version = "1.0.0"
@@ -651,6 +708,7 @@ export default {
                     const [postpreConfig, setPostpreConfig] = useState({});
                     const [selections, setSelections] = useState([]);
                     const scrollRef = useRef(null);  // Ref to handle automatic scroll
+                    const prevSelectionCount = useRef(selections.length); // Track previous selection count
                     const [postOrPreOnloading, setPostOrPreOnloading] = useState({
                         postOnloading: false,
                         preOnloading: false,
@@ -675,6 +733,8 @@ export default {
                         selected_tone: "soft", // Default value for tone
                         selected_writing_style: "professional"
                     });
+                    const [isOpen, setIsOpen] = useState(false);
+                    const [selectedItems, setSelectedItems] = useState({}); // Set first item as default
 
                     function generateUUID() {
                         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -682,35 +742,6 @@ export default {
                             const v = c === 'x' ? r : (r & 0x3) | 0x8;
                             return v.toString(16);
                         });
-                    }
-
-                    async function getDevTemplateList() {
-                        let endpoint = "https://dev.democenter.app.taskus.com/api/external/getTemplateList/1";
-                        try {                    
-                            let response = await fetch(endpoint, {
-                                method: "POST",
-                                headers: {
-                                    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTc3LCJ1c2VyX25hbWUiOiJzYW5nZWV0aGEueWVzdXJhamFuQHRhc2t1cy5jb20iLCJlbWFpbCI6InNhbmdlZXRoYS55ZXN1cmFqYW5AdGFza3VzLmNvbSIsIm5hbWUiOiJTYW5nZWV0aGEgWWVzdXJhamFuIiwic3RhdHVzIjp0cnVlLCJpc19zdXBlckFkbWluIjpmYWxzZSwiaWF0IjoxNzI5MTQyODk4LCJleHAiOjE3MjkxNDg1OTh9.SlLP9c32ICMCvpw1OLNDuowv5tEPUHSSSRTUUZV_HFA",
-                                    "content-type": "application/json",
-                                    "CF-Access-Client-Id": "a83be8f826ef30e595183ba6389029b6.access",
-                                    "CF-Access-Client-Secret": "358e9d16fb4c93bcc63d2b78d4f4c5e03ece2d07e5d6a5a82b85d58c77e5ec27"
-                                },                        
-                                // mode: 'no-cors',
-                                body: JSON.stringify({
-                                    "page": 1,
-                                    "take": 10,
-                                    "searchBy": "",
-                                    "filterBy": ""
-                                })
-                            });
-
-                            if (!(response.ok)) {
-                                throw new Error('Http error status', response?.status, response);
-                            } 
-                            let templateListData = await response.json();
-                        } catch (err) {
-                            console.log("Error in getTemplateList::", err);
-                        }
                     }
 
                     //generate Auth Token API
@@ -805,51 +836,7 @@ export default {
                         );
                         let thumbs_down_msg = "Rating: Thumbs down API response: " + " " + selectionDataItem?.originalData;
                         await logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: log_payload, UUID: unique_uuid, log_message: thumbs_down_msg });
-                    };
-
-                    const promptoApi = async () => {
-                        try {
-                            let endpoint = '/v1/commands/' + isAuthuu.appId + '.app.promptogpt/run';
-                            let setting_token = "Bearer" + " " + settingreg?.setting_token;
-                            let prompRes = await KustomerRequest({
-                                url: endpoint,
-                                method: "POST",
-                                body: {
-                                    "headers": {
-                                        "authorization": setting_token
-                                    },
-                                    "body": {
-                                        "appName": "PromptoGPT",
-                                        "page": 1,
-                                        "take": 10,
-                                        "searchCriterias": [
-                                            {
-                                                "criteriaName": "CATEGORY",
-                                                "value": ""
-                                            }
-                                        ],
-                                        "email": isEmail
-                                    }
-                                }
-                            }, (err, res) => {
-                                if (err) {
-                                    return 'Failed to process return'
-                                } else if (response.responseBody.errors) {
-                                    return response.responseBody.errors.message;
-                                }
-                            }
-                            );
-                            if (prompRes?.data?.attributes?.responseBody) {
-                                setPreShortcuts({
-                                    ...preShortcuts,
-                                    temp_json: prompRes?.data?.attributes?.responseBody?.data[0]?.jsonValue
-                                })
-                                return prompRes?.data?.attributes?.responseBody;
-                            }
-                        } catch (err) {
-                            console.log("Error in promptoApi::", err)
-                        }
-                    }
+                    };                    
 
                     const highlightHeadings = (text) => {
                         // Ensure the input is a string
@@ -945,6 +932,8 @@ export default {
                                     ...prevSelections,
                                     { showText, formattedResponseData, originalData, res_useCase_option, category }
                                 ]);
+                                setIsOpen(false);
+                                setSelectedItems({})
                                 return response?.data?.attributes?.responseBody;
                             }
                         } catch (error) {
@@ -1036,7 +1025,7 @@ export default {
                     }, [appSettings?.default]);
                     
                     useEffect(() => {
-                    }, [isAuthuu, prompt_res, settingreg, isAutoLoading, isEmail, channelType]);
+                    }, [isAuthuu, prompt_res, settingreg, isAutoLoading, isEmail, channelType, isOpen, selectedItems]);
 
                     useEffect(() => {
                         KustomerRequest({ url: '/v1/users/current' }).then(result => {
@@ -1166,26 +1155,6 @@ export default {
                         return () => clearInterval(intervalId);
 
                     }, [settingreg?.refreshToken])
-
-                    useEffect(() => {
-                        const dataPrompt = async () => {
-                            try {
-                                let promptResponse = await promptoApi();
-                                setPromptoRes({
-                                    promptToneOptions: promptResponse?.data[0]?.jsonValue?.tone,
-                                    promptoWritingStyleOptions: promptResponse?.data[0]?.jsonValue?.writing_style,
-                                    shownforTemplate: promptResponse?.data[0]?.jsonValue?.body
-                                })
-                               
-                            } catch (err) {
-                                console.log("Error in dataPrompt::", err);
-                            }
-                        }
-                        if (settingreg?.setting_token) {
-                            dataPrompt();
-                        }
-
-                    }, [settingreg?.setting_token])
 
                     useEffect(() => {
 
@@ -1343,10 +1312,13 @@ export default {
                     useEffect(() => { }, [selections]);
 
                     useEffect(() => {
-                        if (scrollRef.current) {
+                        // Scroll when either loading state changes or a new response is added
+                        if ((isAutoLoading || selections.length > prevSelectionCount.current) && scrollRef.current) {
                             scrollRef.current.scrollIntoView({ behavior: "smooth" });
                         }
-                    }, [selections]);
+                        // Update previous selection count after checking
+                        prevSelectionCount.current = selections.length;
+                    }, [isAutoLoading, selections.length]); // Trigger on loading state or new response
 
                     useEffect(() => {
                         if (ischeckboxType == "promptogpt" || ischeckboxType == "knowledge_assist") {
@@ -1360,6 +1332,8 @@ export default {
                                 preOnloading: false,
                                 preShortcutOption: ""
                             });
+                            setIsOpen(false);
+                            setSelectedItems({})
                         }
                     }, [ischeckboxType])
 
@@ -1482,80 +1456,80 @@ export default {
                                 </div>
 
                                 {(isAutoLoading) ?
-                                <div style={{
-                                    ...common_style,
-                                    margin: "10px 0px 5px",
-                                    fontWeight: "600",
-                                    color: "#000000",
-                                    fontSize: "14px",
-                                    display: "flex",
-                                    gap: "8px",
-                                    fontStyle: "normal",
-                                    alignItems: "center",
-                                    justifyContent: "flex-start"
-                                }}>
-                                    <span className={'loader-prompt'}></span>
-                                    <span style={{
-                                        color: '#000000'
-                                        // color: 'transparent',
-                                        // background: "linear-gradient(to left, rgb(220, 7, 213), rgb(6, 6, 192), rgb(161, 161, 5), rgb(153, 8, 220))",
-                                        // WebkitBackgroundClip: "text",
-                                    }}
-                                    >Prompt<sup>AI</sup></span> is writing....
-                                </div>
-                                :
-                                <div style={{
-                                    ...common_style,
-                                    margin: "10px 0px 5px",
-                                    fontWeight: "600",
-                                    color: "#000000"
-                                }}>
-                                    Responses
-                                    {(lst_.includes(lastUserRes.toLowerCase())) ?
-                                    <div className={'response-box'} style={{cursor: "not-allowed"}}>
-                                        Small Talk Identified
+                                    <div style={{
+                                        ...common_style,
+                                        margin: "10px 0px 5px",
+                                        fontWeight: "600",
+                                        color: "#000000",
+                                        fontSize: "14px",
+                                        display: "flex",
+                                        gap: "8px",
+                                        fontStyle: "normal",
+                                        alignItems: "center",
+                                        justifyContent: "flex-start"
+                                    }}>
+                                        <span className={'loader-prompt'}></span>
+                                        <span style={{
+                                            color: '#000000'
+                                            // color: 'transparent',
+                                            // background: "linear-gradient(to left, rgb(220, 7, 213), rgb(6, 6, 192), rgb(161, 161, 5), rgb(153, 8, 220))",
+                                            // WebkitBackgroundClip: "text",
+                                        }}
+                                        >Prompt<sup>AI</sup></span> is writing....
                                     </div>
                                     :
-                                    <>
-                                        {(data?.length == 0) ?
-                                        <div
-                                            className={'response-box'}
-                                            style={{cursor: "not-allowed"}}
-                                        >
-                                            {/*{item}*/}
-                                            No match found for this data.
+                                    <div style={{
+                                        ...common_style,
+                                        margin: "10px 0px 5px",
+                                        fontWeight: "600",
+                                        color: "#000000"
+                                    }}>
+                                        Responses
+                                        {(lst_.includes(lastUserRes.toLowerCase())) ?
+                                        <div className={'response-box'} style={{cursor: "not-allowed"}}>
+                                            Small Talk Identified
                                         </div>
                                         :
                                         <>
-                                            {(data || []).map((item, index) => {
-                                            const cleanedItem = item.replace(/john\s*->\s*/i, "");
-                                            const payload = createPayload(
-                                                'Kustomer_PromptoGPT_Received_Response',
-                                                'Success'
-                                            );
-                                            let unique_uuid = generateUUID();
-                                            let response_received_LogMsg = 'Response_'+(index+1)+ ": "+ cleanedItem;
-                                            if (settingreg) {
-                                                logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid, log_message: response_received_LogMsg });
-                                            }
-                                            return (
-                                                <div
-                                                key={index}
+                                            {(data?.length == 0) ?
+                                            <div
                                                 className={'response-box'}
-                                                onClick={() => copyFunc(cleanedItem, index)}
-                                                >
+                                                style={{cursor: "not-allowed"}}
+                                            >
                                                 {/*{item}*/}
-                                                {cleanedItem}
-                                                {(copied === index) && <span className={'copied-message'}>Copied</span>}
-                                                </div>
+                                                No match found for this data.
+                                            </div>
+                                            :
+                                            <>
+                                                {(data || []).map((item, index) => {
+                                                const cleanedItem = item.replace(/john\s*->\s*/i, "");
+                                                const payload = createPayload(
+                                                    'Kustomer_PromptoGPT_Received_Response',
+                                                    'Success'
+                                                );
+                                                let unique_uuid = generateUUID();
+                                                let response_received_LogMsg = 'Response_'+(index+1)+ ": "+ cleanedItem;
+                                                if (settingreg) {
+                                                    logsAPI({ isAuthuu: isAuthuu, setting_token: settingreg?.setting_token, user_setting: settingreg?.settingResponse, PAYLOAD_FOR_EVENT: payload, UUID: unique_uuid, log_message: response_received_LogMsg });
+                                                }
+                                                return (
+                                                    <div
+                                                    key={index}
+                                                    className={'response-box'}
+                                                    onClick={() => copyFunc(cleanedItem, index)}
+                                                    >
+                                                    {/*{item}*/}
+                                                    {cleanedItem}
+                                                    {(copied === index) && <span className={'copied-message'}>Copied</span>}
+                                                    </div>
 
-                                            )
-                                            })}
+                                                )
+                                                })}
+                                            </>
+                                            }
                                         </>
                                         }
-                                    </>
-                                    }
-                                </div>
+                                    </div>
                                 }
                             </>
                             )
@@ -1604,7 +1578,7 @@ export default {
                         }
                     }
 
-                    const fetchupdatedGlobalConfigApi = async (user_setting_response, apitoken, apikey, authorAIInstance_data) => {
+                    const fetchupdatedGlobalConfigApi = async (user_setting_response, apitoken, apikey, authorAIInstance_data, authToken) => {
                         try {
                             let endpoint = isAuthuu?.dev_normal_url + "/api/external/getUsecaseConfig/"+authorAIInstance_data[0]?.id;
                             let fetchUpdatedRes = await fetch(endpoint, {
@@ -1612,8 +1586,9 @@ export default {
                                 // headers: dev_headers
                                 "headers": {
                                     // "Content-Type": "application/json",
-                                    "x-apitoken": apitoken,
-                                    "x-apikey": apikey,
+                                    // "x-apitoken": apitoken,
+                                    // "x-apikey": apikey,
+                                    "x-authtoken": authToken,
                                     "CF-Access-Client-Id": user_setting_response?.settings.CF_Access_Client_Id,
                                     "CF-Access-Client-Secret": user_setting_response?.settings.CF_Access_Client_Secret
                                 },
@@ -1628,7 +1603,8 @@ export default {
                                 name: "custom_prompt",
                                 useCase: {
                                     aiName: "custom_prompt"
-                                }
+                                },
+                                type: "PRE_SHORTCUT"
                             };
                             let configRes = data;
                             let preshortCutArray = configRes?.data?.preShortcuts?.filter(item => item.name !== "TEMPLATE_MENU");
@@ -1642,67 +1618,6 @@ export default {
                         } catch (err) {
                             console.log("Error in fetchupdatedGlobalConfigApi::", err);
                         }
-                    }
-
-                    const updatedGlobalConfigApi = async () => {
-                        try {
-                            let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.updated_global_config_api/run';
-                            let updatedResponse = await KustomerRequest({
-                                url: endpoint,
-                                method: "POST",
-                                body: {
-                                    "headers": {
-                                        "x-apikey": "{{{dev_apiKey}}}",
-                                        "x-apitoken": "{{{dev_apitoken}}}",
-                                        "CF-ACCESS-CLIENT-ID": "{{{cloudFlare_Id}}}",
-                                        "CF-ACCESS-CLIENT-SECRET": "{{{cloudFlare_Secret}}}"
-                                    }
-                                }
-                            },  (err, res) => {
-                                    if (err) {
-                                        return 'Failed to process return'
-                                    }
-                                }
-                            );
-                        } catch (error) {
-                            console.log("Error in updatedGlobalConfigApi::", error)
-                        }
-                    }
-
-                    const globalConfigApi = async (x_apitoken, x_apikey) => {
-                        try {
-                            let endpoint = '/v1/commands/'+isAuthuu.appId+'.app.global_config_api/run';
-                            let response = await KustomerRequest({
-                                url: endpoint,
-                                method: 'POST',                            
-                                body: {                                    
-                                    headers: {
-                                        "x-apitoken": x_apitoken,
-                                        "x-apikey": x_apikey                                    
-                                    }                         
-                                }
-                            },(err, response) => {                                    
-                                if (err) {
-                                    return 'Failed to process return'
-                                } 
-                            }
-                            );
-                            let custom_prompt = {
-                                displayName: "Write a Custom Prompt",
-                                name: "custom_prompt",
-                                useCase: {
-                                    aiName: "custom_prompt"
-                                }
-                            };
-                            let configRes = response?.data?.attributes?.responseBody;
-                            configRes?.data?.preShortcuts?.push(custom_prompt);
-                            setPostpreConfig({
-                                postShortcuts: configRes?.data?.postShortcuts,
-                                preShortcuts: configRes?.data?.preShortcuts
-                            });
-                        } catch (err) {
-                            console.log("Error in globalConfigApi::", err);
-                        }                
                     }
 
                     async function settingBtnAPI() {
@@ -1763,7 +1678,7 @@ export default {
                                 // const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle } = await generate_auth_client_token(settingRes, isEmail);
                                 // globalConfigApi(settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey);
                                 const { authToken, clientAuthToken, model_type, usecase, promptoGPT_toggle, knowledgeAssist_toggle, authorAI_toggle, authorAIInstance } = await generateTokenApi(settingRes, isEmail, isAuthuu);
-                                fetchupdatedGlobalConfigApi(settingRes, settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey, authorAIInstance);
+                                fetchupdatedGlobalConfigApi(settingRes, settingRes?.settings.x_apitoken, settingRes?.settings.x_apikey, authorAIInstance, authToken);
                                 setGenerateToken(
                                 {
                                     authToken: authToken,
@@ -1863,7 +1778,8 @@ export default {
                                 },
                                 category: {
                                     main_category: item?.displayName,
-                                    sub_category: sub_category?.displayName
+                                    sub_category: sub_category?.displayName,
+                                    type: item?.type
                                 }
                             }
                             if (sub_category?.useCaseOption) {
@@ -1918,12 +1834,13 @@ export default {
                                 headers: {
                                     "Content-Type": "application/json",
                                     "X-Authtoken": auto_authToken,
-                                    "CF-ACCESS-CLIENT-ID": "${client_id}",
-                                    "CF-ACCESS-CLIENT-SECRET": "${client_sec}"
+                                    "CF-ACCESS-CLIENT-ID": settingreg?.CF_Access_Client_Id,
+                                    "CF-ACCESS-CLIENT-SECRET": settingreg?.CF_Access_Client_Secret
                                 },
                                 category: {
                                     main_category: item?.displayName,
-                                    sub_category: ""
+                                    sub_category: "",
+                                    type: item?.type
                                 }
 
                             }
@@ -1944,6 +1861,37 @@ export default {
                         }
                     }
 
+                    const toggleDropdown = (id) => {
+                        setIsOpen((prevOpen) => ({
+                            ...prevOpen,
+                            [id]: !prevOpen[id]
+                        }));
+                    }
+
+                    const handleSelect = (event, itemId, sub) => {
+                        let selectId = itemId?.id;
+                        setSelectedItems((prevSelected) => ({
+                            ...prevSelected,
+                            [selectId]: sub.displayName
+                        }));
+                        setIsOpen((prevOpen) => ({
+                            ...prevOpen,
+                            [selectId]: false
+                        }));
+                        try {
+                            post_sub_category_items && post_sub_category_items(event, itemId, sub);
+                        } catch (error) {
+                            console.error("Error in post_sub_category_items:", error);
+                        }
+                    };
+
+                    const closeDropdown = (id) => {
+                        setIsOpen((prevOpen) => ({
+                            ...prevOpen,
+                            [id]: false
+                        }));
+                    };
+
                     const post_shortcut_content = () => {
                         return (
                             <div className="post_shortcut_list">
@@ -1961,17 +1909,41 @@ export default {
                                                 {item.displayName}
                                             </div>
                                             <div className={'post_shortcut_subcategory'}>
-                                                {(item.subUseCases || []).map((sub, index) => {
-                                                    return (
+                                                {item?.subUseCases?.length > 0 && (
+                                                    <div 
+                                                        className="dropdown-container"
+                                                        onMouseLeave={() => closeDropdown(item.id)} // Close dropdown on mouse leave
+                                                    >
                                                         <div
-                                                            className={sub?.name ? 'ps_subcategory_item' : ''}
-                                                            // onMouseDown={(e) => post_sub_category_items(e, sub)}
-                                                            onClick={(e) => post_sub_category_items(e, item, sub, index)}
+                                                            className="dropdown-selected"
+                                                            onClick={() => toggleDropdown(item.id)}
                                                         >
-                                                            {sub?.displayName}
+                                                            {selectedItems[item.id] || "Select an option"} 
+                                                            {isOpen[item.id] ? (
+                                                                <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fillRule="evenodd" clipRule="evenodd" d="M12.3614 7.59999C11.8928 8.06862 11.133 8.06862 10.6644 7.59999L6.71289 3.64852L2.76142 7.59999C2.29279 8.06862 1.53299 8.06862 1.06436 7.59999C0.595733 7.13136 0.595733 6.37157 1.06436 5.90294L5.86436 1.10294C6.33299 0.634307 7.09279 0.634308 7.56142 1.10294L12.3614 5.90294C12.83 6.37157 12.83 7.13137 12.3614 7.59999Z" fill="#8217FF" />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fillRule="evenodd" clipRule="evenodd" d="M1.06436 0.751374C1.53299 0.282745 2.29279 0.282745 2.76142 0.751374L6.71289 4.70285L10.6644 0.751374C11.133 0.282745 11.8928 0.282745 12.3614 0.751374C12.83 1.22 12.83 1.9798 12.3614 2.44843L7.56142 7.24843C7.09279 7.71706 6.33299 7.71706 5.86436 7.24843L1.06436 2.44843C0.595733 1.9798 0.595733 1.22 1.06436 0.751374Z" fill="#8217FF" />
+                                                                </svg>
+                                                            )}
                                                         </div>
-                                                    )
-                                                })}
+                                                        {isOpen[item.id] && (
+                                                            <div className="dropdown-options">
+                                                                {item.subUseCases.map((sub) => (
+                                                                    <div
+                                                                        key={sub.id}
+                                                                        className="dropdown-option"
+                                                                        onClick={(e) => handleSelect(e,item, sub)}
+                                                                    >
+                                                                        {sub.displayName}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )
@@ -2034,7 +2006,8 @@ export default {
                                 },
                                 category: {
                                     main_category: preShortcuts?.preShortcutOption?.displayName,
-                                    sub_category: ""
+                                    sub_category: "",
+                                    type: preShortcuts?.preShortcutOption?.type
                                 }
 
                             }
@@ -2230,13 +2203,21 @@ export default {
                             <>
                                 <div className={'selected_txt_post_blog'}>
                                     <div className={'st_response'}>
-                                        <div className={'select_text_heading'}>Selected Text</div>
+                                        {(selection?.category?.type == "POST_SHORTCUT") ?
+                                            <div className={'select_text_heading'}>Selected Text</div>
+                                            :
+                                            <div className={'select_text_heading'}>{selection?.category?.main_category}</div>
+                                        }
                                         {/* <div className={'query'}>{selectedText}</div> */}
                                         <div className={'query'}>{selection?.showText}</div> 
                                     </div>                            
                                 </div>
                                 <div className={'overall_icon_pack'}>
-                                    <div className="action_items">{selection?.category?.main_category}{selection?.category?.sub_category && ("/"+""+selection?.category?.sub_category)}</div>
+                                    {(selection?.category?.type == "POST_SHORTCUT") ?
+                                        <div className="action_items">{selection?.category?.main_category}{selection?.category?.sub_category && ("/"+""+selection?.category?.sub_category)}</div>
+                                        :
+                                        <div className="action_items">Response</div>
+                                    }
 
                                     {/* Render formatted content without dangerouslySetInnerHTML */}
                                     {/*<div className="ac_content">
@@ -2299,7 +2280,8 @@ export default {
                                 },
                                 category: {
                                     main_category: selectionData?.category?.main_category,
-                                    sub_category: (selectionData?.category?.sub_category)?selectionData?.category?.sub_category:""
+                                    sub_category: (selectionData?.category?.sub_category)?selectionData?.category?.sub_category:"",
+                                    type:  selectionData?.category?.type
                                 }
                             }
 
@@ -2366,22 +2348,22 @@ export default {
                                             <>
                                                 {
                                                     (selections.length > 0 && selections.map((selection, index) => (
-                                                        <div key={index} ref={index === selections.length - 1 ? scrollRef : null}>
+                                                        <div key={index}>
                                                             {selected_txt_post_blog(selection, index)}
                                                             {/* Place scrollRef after the last response */}
                                                             {/*index === selections.length - 1 && <div ref={scrollRef}></div>*/}
                                                         </div>
                                                     )))
                                                 }
-                                                <>
-                                                    <div id="spinner_bounce" style={{ display: "block" }}>
+                                                
+                                                    <div id="spinner_bounce" style={{ display: "block" }} ref={scrollRef}>
                                                         <div className="spinner_bounce" style={{ padding: "0px 15px" }}>
                                                             <div className="bounce1"></div>
                                                             <div className="bounce2"></div>
                                                             <div className="bounce3"></div>
                                                         </div>
                                                     </div>
-                                                </>
+                                                
                                             </>
                                             : <>
                                                 {selections.length > 0 && selections.map((selection, index) => (

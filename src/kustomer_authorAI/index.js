@@ -49,37 +49,9 @@ selecting_endpoint(environmet);
 
 export default {
     app: "sample_authorai",
-    version: "0.0.172",
+    version: "0.0.182",
     description: "Author AI is used to make summarry from the selected text",
-    commands: [
-        {
-            name: "global_config_api",
-            displayName: "Config",
-            // url: "https://taskgpt-access.taskus.com/api/external/getInstanceUsecaseConfig/Global",
-            url: url_normal_endpoint+""+"/api/external/getInstanceUsecaseConfig/Kustomer",
-            cacheSeconds: 15,
-            httpMethod: "get"
-        },
-        {
-            name: "updated_global_config_api",
-            displayName: "global",
-            url: url_normal_endpoint + "" + "/api/external/getInstanceUsecaseConfig/Global",
-            httpMethod: "get",
-            appSettings: {
-                dev_apiKey: {
-                    key: "sample_authorai.default.dev_apiKey"
-                },
-                dev_apitoken: {
-                    key: "sample_authorai.default.dev_apitoken"
-                },
-                cloudFlare_Id: {
-                    key: "sample_authorai.default.cloudFlare_Id"
-                },
-                cloudFlare_Secret: {
-                    key: "sample_authorai.default.cloudFlare_Secret"
-                }
-            }
-        },
+    commands: [        
         {
             name: "login_api_data",
             displayName: "Loginres",
